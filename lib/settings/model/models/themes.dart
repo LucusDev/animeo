@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 class CustomTheme {
   static final ThemeData light = ThemeData.light().copyWith(
+    splashColor: const Color.fromRGBO(48, 79, 254, 1),
     textTheme: const TextTheme(
       headline1: TextStyle(
         overflow: TextOverflow.ellipsis,
@@ -25,13 +26,13 @@ class CustomTheme {
       color: Colors.white,
     ),
     appBarTheme: const AppBarTheme(
-      backgroundColor: Colors.white,
+      backgroundColor: Color.fromRGBO(244, 244, 255, 1),
       elevation: 0,
     ),
     errorColor: Colors.red.shade100,
     iconTheme: const IconThemeData(color: Color.fromRGBO(48, 79, 254, 1)),
     primaryColorLight: const Color.fromRGBO(235, 238, 255, 1),
-    scaffoldBackgroundColor: Colors.white,
+    scaffoldBackgroundColor: const Color.fromRGBO(247, 247, 255, 1),
     primaryColor: const Color.fromRGBO(48, 79, 254, 1),
     progressIndicatorTheme: const ProgressIndicatorThemeData(
       color: Color.fromRGBO(48, 79, 254, 1),
@@ -39,6 +40,7 @@ class CustomTheme {
   );
 
   static final ThemeData dark = ThemeData.dark().copyWith(
+    splashColor: const Color.fromRGBO(48, 79, 254, 1),
     inputDecorationTheme: const InputDecorationTheme(
         border: InputBorder.none, fillColor: Color.fromRGBO(20, 20, 20, 1)),
     errorColor: const Color.fromRGBO(37, 14, 19, 1),

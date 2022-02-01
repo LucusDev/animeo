@@ -1,13 +1,20 @@
 import 'package:animeo/core/models/anime.dart';
+import 'package:animeo/core/models/result.dart';
 import 'package:animeo/core/widgets/cached_image.dart';
 import 'package:animeo/core/widgets/custom_card.dart';
 import 'package:animeo/core/widgets/custom_scaffold.dart';
 import 'package:animeo/core/widgets/custom_tile.dart';
 import 'package:animeo/core/widgets/infinite_scroll_list.dart';
 import 'package:animeo/core/widgets/tag.dart';
+import 'package:animeo/home/model/models/home_network_page.dart';
 import 'package:animeo/home/model/network/network_repo.dart';
+import 'package:animeo/home/view/widgets/home_tab_page.dart';
+import 'package:animeo/search/model/models/search.dart';
+import 'package:animeo/search/view/search_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/src/foundation/diagnostics.dart';
 import 'package:visibility_detector/visibility_detector.dart';
+import 'package:sizer/sizer.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -18,51 +25,42 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage>
     with AutomaticKeepAliveClientMixin {
-  List<Anime> data = [];
-  bool fetching = false;
-  int pageNumber = 1;
-  bool isError = false;
+  final PageController _controller = PageController(
+    keepPage: true,
+  );
+  Genres genre = Genres.action;
+  late final pages = [
+    HomeTabPage(
+      getHomeTabType: (pageNum) {
+        return HomeNetworkPage.recent(pageNum);
+      },
+    ),
+    HomeTabPage(
+      getHomeTabType: (pageNum) {
+        return HomeNetworkPage.popular(pageNum);
+      },
+    ),
+    HomeTabPage(
+      getHomeTabType: (pageNum) {
+        return HomeNetworkPage.seasonal(pageNum);
+      },
+    ),
+    HomeTabPage(
+      getHomeTabType: (pageNum) {
+        return HomeNetworkPage.genres(pageNum, genre: genre);
+      },
+      changeGenre: (genres) {
+        setState(() {
+          genre = genres;
+        });
+      },
+    ),
+  ];
+  int currentPage = 0;
   @override
   void initState() {
     VisibilityDetectorController.instance.updateInterval = Duration.zero;
     super.initState();
-  }
-
-  Future<void> fetch(VisibilityInfo info) async {
-    if (fetching) return;
-
-    if (info.visibleFraction > 0.1) {
-      // print("fetching");
-      fetching = true;
-      final result = await HomeNetworkRepo.getRecentEpisodes(pageNumber);
-      fetching = false;
-      result.when(
-        success: (value) {
-          // print("success");
-          data.addAll(value);
-          updateKeepAlive();
-          isError = false;
-          setState(() {});
-        },
-        error: (message) {
-          if (!fetching) {
-            fetching = true;
-            Future.delayed(const Duration(seconds: 5)).then((_) {
-              fetching = false;
-              fetch(info);
-              // print("refetching");
-            });
-          }
-          // print("error");
-          if (!isError) {
-            isError = true;
-            setState(() {});
-          }
-        },
-      );
-      if (isError) return;
-      pageNumber++;
-    }
   }
 
   @override
@@ -80,85 +78,74 @@ class _HomePageState extends State<HomePage>
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Tag(
-                      onClick: () {},
+                      onClick: () {
+                        currentPage = 0;
+                        _controller.animateToPage(0,
+                            duration: const Duration(milliseconds: 200),
+                            curve: Curves.ease);
+                        setState(() {});
+                      },
                       text: "Recent",
-                      isActive: true,
+                      isActive: currentPage == 0,
                     ),
                   ),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Tag(
-                      onClick: () {},
-                      text: "Subs",
+                      onClick: () {
+                        currentPage = 1;
+                        _controller.animateToPage(1,
+                            duration: const Duration(milliseconds: 200),
+                            curve: Curves.ease);
+                        setState(() {});
+                      },
+                      text: "Popular",
+                      isActive: currentPage == 1,
                     ),
                   ),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Tag(
-                      onClick: () {},
-                      text: "Dubs",
+                      onClick: () {
+                        currentPage = 2;
+                        _controller.animateToPage(2,
+                            duration: const Duration(milliseconds: 200),
+                            curve: Curves.ease);
+                        setState(() {});
+                      },
+                      text: "Seasonal",
+                      isActive: currentPage == 2,
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Tag(
+                      onClick: () {
+                        currentPage = 3;
+                        _controller.animateToPage(3,
+                            duration: const Duration(milliseconds: 200),
+                            curve: Curves.ease);
+                        setState(() {});
+                      },
+                      text: "Genre",
+                      isActive: currentPage == 3,
                     ),
                   ),
                 ],
               ),
             ),
             Expanded(
-              child: RefreshIndicator(
-                onRefresh: () async {
-                  pageNumber = 1;
-                  fetching = false;
-                  data = [];
-                  updateKeepAlive();
-                  setState(() {});
+              child: PageView.builder(
+                itemBuilder: (context, index) {
+                  return pages.elementAt(index);
                 },
-                child: InfiniteScrollList(
-                  onEnd: fetch,
-                  totalCount: data.length,
-                  isEnd: false,
-                  itemBuilder: (context, index) {
-                    final strings = data.elementAt(index).title.split('\n');
-                    return CustomTile(
-                      leading: CustomCard(
-                        padding: EdgeInsets.zero,
-                        child: AspectRatio(
-                          aspectRatio: 1 / 1,
-                          child: CachedImage(
-                            url: data.elementAt(index).img,
-                          ),
-                        ),
-                      ),
-                      title: strings.isNotEmpty
-                          ? Text(
-                              strings.elementAt(0),
-                              maxLines: 1,
-                            )
-                          : null,
-                      subtitle: strings.length > 1
-                          ? Text(
-                              strings.elementAt(1),
-                            )
-                          : null,
-                      trailing: const Icon(
-                        Icons.keyboard_arrow_right,
-                        color: Color.fromRGBO(80, 88, 253, 1),
-                      ),
-                    );
-                  },
-                ),
+                controller: _controller,
+                itemCount: pages.length,
+                physics: const NeverScrollableScrollPhysics(),
               ),
             ),
           ],
         ),
-        bottomNavigationBar: isError
-            ? FractionallySizedBox(
-                widthFactor: 1,
-                child: Text(
-                  "No connection",
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.headline1,
-                ),
-              )
-            : null,
         appBar: AppBar(
           leading: Padding(
             padding: const EdgeInsets.all(5.0),
@@ -173,10 +160,6 @@ class _HomePageState extends State<HomePage>
               ),
             ),
           ),
-          // title: Text(
-          //   "Hello, Htet!",
-          //   style: Theme.of(context).textTheme.headline1,
-          // ),
           actions: [
             Row(
               children: [
@@ -212,15 +195,27 @@ class _HomePageState extends State<HomePage>
                 const SizedBox(
                   width: 10,
                 ),
-                SizedBox(
-                  width: 40,
-                  height: 40,
-                  child: CustomCard(
-                    padding: EdgeInsets.zero,
-                    child: Expanded(
-                      child: Icon(
-                        Icons.search,
-                        color: Theme.of(context).primaryColor,
+                GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) {
+                        return const SearchPage();
+                      },
+                    ));
+                  },
+                  child: Hero(
+                    tag: "search_icon",
+                    child: SizedBox(
+                      width: 40,
+                      height: 40,
+                      child: CustomCard(
+                        padding: EdgeInsets.zero,
+                        child: Expanded(
+                          child: Icon(
+                            Icons.search,
+                            color: Theme.of(context).primaryColor,
+                          ),
+                        ),
                       ),
                     ),
                   ),
@@ -237,5 +232,5 @@ class _HomePageState extends State<HomePage>
   }
 
   @override
-  bool get wantKeepAlive => data.isNotEmpty;
+  bool get wantKeepAlive => true;
 }

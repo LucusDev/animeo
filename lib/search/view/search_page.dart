@@ -17,39 +17,45 @@ class _SearchPageState extends ConsumerState<SearchPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: CustomScaffold(
-          appBar: AppBar(
-            leading: const AppbarButton(),
-            title: Container(
-                decoration: BoxDecoration(
-                  // border: Border.all(width: 2, color: Colors.white),
-                  color: Theme.of(context).inputDecorationTheme.fillColor,
-                  borderRadius: BorderRadius.circular(1000),
-                ),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                ),
-                child: Row(
-                  children: [
-                    const Expanded(
-                      child: TextField(
-                        decoration: InputDecoration(
-                          hintText: "Search",
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: CustomScaffold(
+            appBar: AppBar(
+              leading: const AppbarButton(),
+              title: Container(
+                  decoration: BoxDecoration(
+                    // border: Border.all(width: 2, color: Colors.white),
+                    color: Theme.of(context).inputDecorationTheme.fillColor,
+                    borderRadius: BorderRadius.circular(1000),
+                  ),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                  ),
+                  child: Row(
+                    children: [
+                      const Expanded(
+                        child: TextField(
+                          decoration: InputDecoration(
+                            hintText: "Search",
+                          ),
                         ),
                       ),
-                    ),
-                    Icon(
-                      Icons.search,
-                      color: Theme.of(context).textTheme.subtitle1!.color!,
-                    ),
-                  ],
-                )),
-          ),
-          child: Column(
-            children: [
-              // Expanded(child: Infi)
-            ],
-          )),
+                      Hero(
+                        tag: "search_icon",
+                        child: Icon(
+                          Icons.search,
+                          color: Theme.of(context).textTheme.subtitle1!.color!,
+                        ),
+                      ),
+                    ],
+                  )),
+            ),
+            child: Column(
+              children: [
+                // Expanded(child: Infi)
+              ],
+            )),
+      ),
     );
   }
 }

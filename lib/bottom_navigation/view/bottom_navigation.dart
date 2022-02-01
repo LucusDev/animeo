@@ -20,7 +20,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
 
   int currentPage = 0;
   final pages = [
-    const SearchPage(),
+    // const SearchPage(),
     const HomePage(),
     const SettingsNavigation(),
     Scaffold(
