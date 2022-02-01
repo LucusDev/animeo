@@ -44,6 +44,11 @@ dependencies:
   freezed_annotation: ^1.1.0
   sizer: ^2.0.15
   get_it: ^7.2.0
+  cached_network_image: ^3.2.0
+  flutter_cache_manager: ^3.3.0
+  html: ^0.15.0
+  visibility_detector: ^0.2.2
+  fluttertoast: ^8.0.8
   #custom packages
 
 dev_dependencies:

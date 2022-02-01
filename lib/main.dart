@@ -1,7 +1,13 @@
+import 'package:animeo/bottom_navigation/view/bottom_navigation.dart';
+import 'package:animeo/core/models/nav_key.dart';
+import 'package:animeo/search/controller/search_notifier.dart';
+import 'package:animeo/search/controller/search_provider.dart';
+import 'package:animeo/search/index.dart';
+import 'package:animeo/search/model/database/search_db.dart';
 import 'package:animeo/settings/controller/settings_notifer.dart';
 import 'package:animeo/settings/controller/settings_provider.dart';
-import 'package:animeo/settings/model/models/settings.dart';
-import 'package:animeo/settings/utils/enums.dart';
+import 'package:animeo/settings/index.dart';
+import 'package:animeo/settings/view/settings_view.dart';
 import 'package:flutter/material.dart';
 import 'package:animeo/settings/model/database/settings_db.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -13,10 +19,10 @@ final getIt = GetIt.instance;
 
 Future<void> init() async {
   await Hive.initFlutter();
-  Hive.registerAdapter(SettingsAdapter());
-  Hive.registerAdapter(ThemeTypeAdapter());
-  getIt.registerSingleton<SettingsDb>(SettingsDb());
-  await SettingsDb().init();
+  await SettingsFeature.init();
+  await SearchFeature.init();
+  getIt.registerSingleton<NavKey<MyApp>>(
+      NavKey(key: GlobalKey<NavigatorState>()));
 }
 
 void main() async {
@@ -25,6 +31,9 @@ void main() async {
   runApp(
     ProviderScope(
       overrides: [
+        searchProvider.overrideWithValue(
+          SearchNotifier(await getIt<SearchDB>().getSearch()),
+        ),
         settingsProvider.overrideWithValue(
             SettingsNotifier(await getIt<SettingsDb>().getSettings())),
       ],
@@ -46,31 +55,13 @@ class MyApp extends StatelessWidget {
     return Consumer(
       builder: (context, ref, _) {
         return MaterialApp(
+          debugShowCheckedModeBanner: false,
+          navigatorKey: getIt<NavKey<MyApp>>().key,
           theme: ref.watch(settingsProvider).value.getTheme,
           title: 'Animeo',
-          home: Scaffold(
-            body: Column(
-              children: [
-                ElevatedButton(
-                  onPressed: () {
-                    ref
-                        .read(settingsProvider.notifier)
-                        .changeTheme(ThemeType.dark);
-                  },
-                  child: Text("change to dark mode"),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    ref
-                        .read(settingsProvider.notifier)
-                        .changeTheme(ThemeType.light);
-                  },
-                  child: Text("change to light mode"),
-                ),
-                ElevatedButton(onPressed: () {}, child: Text("")),
-                ElevatedButton(onPressed: () {}, child: Text("")),
-                ElevatedButton(onPressed: () {}, child: Text("")),
-              ],
+          home: const Scaffold(
+            body: SafeArea(
+              child: BottomNavigation(),
             ),
           ),
         );

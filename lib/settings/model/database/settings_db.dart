@@ -21,4 +21,11 @@ class SettingsDb extends Db<Settings> {
       await db.add(settings);
     });
   }
+
+  Future<void> resetDefault() async {
+    await auto(() async {
+      await db.clear();
+      await db.add(const Settings());
+    });
+  }
 }

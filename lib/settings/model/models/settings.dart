@@ -11,7 +11,6 @@ part 'settings.g.dart';
 @HiveType(typeId: 0)
 @immutable
 class Settings {
-  //Theme
   @HiveField(0)
   final ThemeType theme;
 

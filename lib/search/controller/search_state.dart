@@ -1,0 +1,4 @@
+enum searchState {
+  idle,
+  busy,
+}

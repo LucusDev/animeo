@@ -1,16 +1,23 @@
-# animeo
+# flutter_starter
 
-A new Flutter project.
+Stater project for developing flutter apps.
 
 ## Getting Started
 
 This project is a starting point for a Flutter application.
 
-A few resources to get you started if this is your first Flutter project:
+## Used Frameworks
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+> -Hive for database<br/>
+> -Riverpod for statemanagement<br/>
+> -dio for requesting data from apis <br/>
+> -MVC for architecture<br/>
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Useful commands
+
+> -flutter pub rename --appname yourappname = for changing appname<br/>
+> -flutter pub run rename --bundleId com.test.app = for changing bundleId<br/>
+> -flutter pub run rename --bundleId com.test.app = for changing bundleId <br/>
+> -flutter pub run change_app_package_name:main com.new.package.name = for changing app package name <br/>
+> -flutter pub run flutter_native_splash:create = for changing native splash<br/>
+> -flutter pub run flutter_launcher_icons:main = for changing launcher icon<br/>
