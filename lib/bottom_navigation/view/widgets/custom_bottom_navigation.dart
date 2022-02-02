@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:animeo/core/widgets/custom_card.dart';
 import 'package:flutter/material.dart';
 
@@ -18,20 +20,21 @@ class _CustomBottomNavigationState extends State<CustomBottomNavigation> {
       widthFactor: 1,
       child: DecoratedBox(
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(15),
-          border: Border.all(
-            width: 0.23,
-            color: Colors.black.withOpacity(1),
-          ),
-          // color: Theme.of(context).cardTheme.color,
+          color: Theme.of(context).scaffoldBackgroundColor.withOpacity(0.8),
         ),
-        child: CustomCard(
-          bgColor: Theme.of(context).cardTheme.color,
-          child: Expanded(
-            child: Row(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: widget.children,
+        child: ClipRRect(
+          child: BackdropFilter(
+            filter: ImageFilter.blur(
+              sigmaX: 3,
+              sigmaY: 3,
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: widget.children,
+              ),
             ),
           ),
         ),

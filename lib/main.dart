@@ -7,7 +7,6 @@ import 'package:animeo/search/model/database/search_db.dart';
 import 'package:animeo/settings/controller/settings_notifer.dart';
 import 'package:animeo/settings/controller/settings_provider.dart';
 import 'package:animeo/settings/index.dart';
-import 'package:animeo/settings/view/settings_view.dart';
 import 'package:flutter/material.dart';
 import 'package:animeo/settings/model/database/settings_db.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

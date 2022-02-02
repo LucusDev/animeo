@@ -3,7 +3,7 @@
 // ignore_for_file: type=lint
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target
 
-part of 'home_network_page.dart';
+part of 'browse_network_page.dart';
 
 // **************************************************************************
 // FreezedGenerator
@@ -15,8 +15,8 @@ final _privateConstructorUsedError = UnsupportedError(
     'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more informations: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
 
 /// @nodoc
-class _$HomeNetworkPageTearOff {
-  const _$HomeNetworkPageTearOff();
+class _$BrowseNetworkPageTearOff {
+  const _$BrowseNetworkPageTearOff();
 
   Recent recent(int pageNum) {
     return Recent(
@@ -47,10 +47,10 @@ class _$HomeNetworkPageTearOff {
 }
 
 /// @nodoc
-const $HomeNetworkPage = _$HomeNetworkPageTearOff();
+const $BrowseNetworkPage = _$BrowseNetworkPageTearOff();
 
 /// @nodoc
-mixin _$HomeNetworkPage {
+mixin _$BrowseNetworkPage {
   int get pageNum => throw _privateConstructorUsedError;
 
   @optionalTypeArgs
@@ -105,26 +105,26 @@ mixin _$HomeNetworkPage {
       throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
-  $HomeNetworkPageCopyWith<HomeNetworkPage> get copyWith =>
+  $BrowseNetworkPageCopyWith<BrowseNetworkPage> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class $HomeNetworkPageCopyWith<$Res> {
-  factory $HomeNetworkPageCopyWith(
-          HomeNetworkPage value, $Res Function(HomeNetworkPage) then) =
-      _$HomeNetworkPageCopyWithImpl<$Res>;
+abstract class $BrowseNetworkPageCopyWith<$Res> {
+  factory $BrowseNetworkPageCopyWith(
+          BrowseNetworkPage value, $Res Function(BrowseNetworkPage) then) =
+      _$BrowseNetworkPageCopyWithImpl<$Res>;
   $Res call({int pageNum});
 }
 
 /// @nodoc
-class _$HomeNetworkPageCopyWithImpl<$Res>
-    implements $HomeNetworkPageCopyWith<$Res> {
-  _$HomeNetworkPageCopyWithImpl(this._value, this._then);
+class _$BrowseNetworkPageCopyWithImpl<$Res>
+    implements $BrowseNetworkPageCopyWith<$Res> {
+  _$BrowseNetworkPageCopyWithImpl(this._value, this._then);
 
-  final HomeNetworkPage _value;
+  final BrowseNetworkPage _value;
   // ignore: unused_field
-  final $Res Function(HomeNetworkPage) _then;
+  final $Res Function(BrowseNetworkPage) _then;
 
   @override
   $Res call({
@@ -140,7 +140,8 @@ class _$HomeNetworkPageCopyWithImpl<$Res>
 }
 
 /// @nodoc
-abstract class $RecentCopyWith<$Res> implements $HomeNetworkPageCopyWith<$Res> {
+abstract class $RecentCopyWith<$Res>
+    implements $BrowseNetworkPageCopyWith<$Res> {
   factory $RecentCopyWith(Recent value, $Res Function(Recent) then) =
       _$RecentCopyWithImpl<$Res>;
   @override
@@ -148,7 +149,7 @@ abstract class $RecentCopyWith<$Res> implements $HomeNetworkPageCopyWith<$Res> {
 }
 
 /// @nodoc
-class _$RecentCopyWithImpl<$Res> extends _$HomeNetworkPageCopyWithImpl<$Res>
+class _$RecentCopyWithImpl<$Res> extends _$BrowseNetworkPageCopyWithImpl<$Res>
     implements $RecentCopyWith<$Res> {
   _$RecentCopyWithImpl(Recent _value, $Res Function(Recent) _then)
       : super(_value, (v) => _then(v as Recent));
@@ -179,7 +180,7 @@ class _$Recent implements Recent {
 
   @override
   String toString() {
-    return 'HomeNetworkPage.recent(pageNum: $pageNum)';
+    return 'BrowseNetworkPage.recent(pageNum: $pageNum)';
   }
 
   @override
@@ -274,7 +275,7 @@ class _$Recent implements Recent {
   }
 }
 
-abstract class Recent implements HomeNetworkPage {
+abstract class Recent implements BrowseNetworkPage {
   const factory Recent(int pageNum) = _$Recent;
 
   @override
@@ -286,7 +287,7 @@ abstract class Recent implements HomeNetworkPage {
 
 /// @nodoc
 abstract class $PopularCopyWith<$Res>
-    implements $HomeNetworkPageCopyWith<$Res> {
+    implements $BrowseNetworkPageCopyWith<$Res> {
   factory $PopularCopyWith(Popular value, $Res Function(Popular) then) =
       _$PopularCopyWithImpl<$Res>;
   @override
@@ -294,7 +295,7 @@ abstract class $PopularCopyWith<$Res>
 }
 
 /// @nodoc
-class _$PopularCopyWithImpl<$Res> extends _$HomeNetworkPageCopyWithImpl<$Res>
+class _$PopularCopyWithImpl<$Res> extends _$BrowseNetworkPageCopyWithImpl<$Res>
     implements $PopularCopyWith<$Res> {
   _$PopularCopyWithImpl(Popular _value, $Res Function(Popular) _then)
       : super(_value, (v) => _then(v as Popular));
@@ -325,7 +326,7 @@ class _$Popular implements Popular {
 
   @override
   String toString() {
-    return 'HomeNetworkPage.popular(pageNum: $pageNum)';
+    return 'BrowseNetworkPage.popular(pageNum: $pageNum)';
   }
 
   @override
@@ -420,7 +421,7 @@ class _$Popular implements Popular {
   }
 }
 
-abstract class Popular implements HomeNetworkPage {
+abstract class Popular implements BrowseNetworkPage {
   const factory Popular(int pageNum) = _$Popular;
 
   @override
@@ -432,7 +433,7 @@ abstract class Popular implements HomeNetworkPage {
 
 /// @nodoc
 abstract class $SeasonalCopyWith<$Res>
-    implements $HomeNetworkPageCopyWith<$Res> {
+    implements $BrowseNetworkPageCopyWith<$Res> {
   factory $SeasonalCopyWith(Seasonal value, $Res Function(Seasonal) then) =
       _$SeasonalCopyWithImpl<$Res>;
   @override
@@ -440,7 +441,7 @@ abstract class $SeasonalCopyWith<$Res>
 }
 
 /// @nodoc
-class _$SeasonalCopyWithImpl<$Res> extends _$HomeNetworkPageCopyWithImpl<$Res>
+class _$SeasonalCopyWithImpl<$Res> extends _$BrowseNetworkPageCopyWithImpl<$Res>
     implements $SeasonalCopyWith<$Res> {
   _$SeasonalCopyWithImpl(Seasonal _value, $Res Function(Seasonal) _then)
       : super(_value, (v) => _then(v as Seasonal));
@@ -485,7 +486,7 @@ class _$Seasonal implements Seasonal {
 
   @override
   String toString() {
-    return 'HomeNetworkPage.seasonal(pageNum: $pageNum, season: $season, year: $year)';
+    return 'BrowseNetworkPage.seasonal(pageNum: $pageNum, season: $season, year: $year)';
   }
 
   @override
@@ -585,7 +586,7 @@ class _$Seasonal implements Seasonal {
   }
 }
 
-abstract class Seasonal implements HomeNetworkPage {
+abstract class Seasonal implements BrowseNetworkPage {
   const factory Seasonal(int pageNum, {Season? season, int? year}) = _$Seasonal;
 
   @override
@@ -599,7 +600,8 @@ abstract class Seasonal implements HomeNetworkPage {
 }
 
 /// @nodoc
-abstract class $GenreCopyWith<$Res> implements $HomeNetworkPageCopyWith<$Res> {
+abstract class $GenreCopyWith<$Res>
+    implements $BrowseNetworkPageCopyWith<$Res> {
   factory $GenreCopyWith(Genre value, $Res Function(Genre) then) =
       _$GenreCopyWithImpl<$Res>;
   @override
@@ -607,7 +609,7 @@ abstract class $GenreCopyWith<$Res> implements $HomeNetworkPageCopyWith<$Res> {
 }
 
 /// @nodoc
-class _$GenreCopyWithImpl<$Res> extends _$HomeNetworkPageCopyWithImpl<$Res>
+class _$GenreCopyWithImpl<$Res> extends _$BrowseNetworkPageCopyWithImpl<$Res>
     implements $GenreCopyWith<$Res> {
   _$GenreCopyWithImpl(Genre _value, $Res Function(Genre) _then)
       : super(_value, (v) => _then(v as Genre));
@@ -646,7 +648,7 @@ class _$Genre implements Genre {
 
   @override
   String toString() {
-    return 'HomeNetworkPage.genres(pageNum: $pageNum, genre: $genre)';
+    return 'BrowseNetworkPage.genres(pageNum: $pageNum, genre: $genre)';
   }
 
   @override
@@ -744,7 +746,7 @@ class _$Genre implements Genre {
   }
 }
 
-abstract class Genre implements HomeNetworkPage {
+abstract class Genre implements BrowseNetworkPage {
   const factory Genre(int pageNum, {Genres genre}) = _$Genre;
 
   @override

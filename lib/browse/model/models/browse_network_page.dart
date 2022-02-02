@@ -1,26 +1,26 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-part 'home_network_page.freezed.dart';
+part 'browse_network_page.freezed.dart';
 
 @freezed
-class HomeNetworkPage with _$HomeNetworkPage {
-  const factory HomeNetworkPage.recent(int pageNum) = Recent;
-  const factory HomeNetworkPage.popular(int pageNum) = Popular;
-  const factory HomeNetworkPage.seasonal(
+class BrowseNetworkPage with _$BrowseNetworkPage {
+  const factory BrowseNetworkPage.recent(int pageNum) = Recent;
+  const factory BrowseNetworkPage.popular(int pageNum) = Popular;
+  const factory BrowseNetworkPage.seasonal(
     int pageNum, {
     Season? season,
     int? year,
   }) = Seasonal;
-  const factory HomeNetworkPage.genres(
+  const factory BrowseNetworkPage.genres(
     int pageNum, {
     @Default(Genres.action) Genres genre,
   }) = Genre;
 }
 
 enum Season {
+  fall,
+  summer,
   spring,
   winter,
-  summer,
-  fall,
 }
 
 extension SeasonExt on Season {

@@ -1,40 +1,15 @@
+import 'package:animeo/browse/model/network/network_repo.dart';
 import 'package:animeo/core/constants/urls.dart';
 import 'package:animeo/core/models/anime.dart';
 import 'package:animeo/core/models/result.dart';
-import 'package:animeo/home/model/models/home_network_page.dart';
 import 'package:http/http.dart' as http;
 import 'package:html/parser.dart' as parser;
 
-class HomeNetworkRepo {
-  ///get Recent Episodes
-  static Future<Result<List<Anime>>> get(
-      HomeNetworkPage homeNetworkPage) async {
-    String modifiedUrl = "";
-    int pageNumber = 0;
-
-    homeNetworkPage.when(
-      recent: (pageNum) {
-        pageNumber = pageNum;
-        modifiedUrl = Urls.main + "/?page=$pageNum";
-      },
-      popular: (pageNum) {
-        pageNumber = pageNum;
-        modifiedUrl = Urls.main + "/popular.html?page=$pageNum";
-      },
-      seasonal: (pageNum, season, year) {
-        pageNumber = pageNum;
-        if (!(season == null || year == null)) {
-          modifiedUrl = Urls.main +
-              "/sub-category/${season.toValue()}-$year-anime?page=$pageNum";
-        } else {
-          modifiedUrl = Urls.main + "/new-season.html?page=$pageNum";
-        }
-      },
-      genres: (pageNum, genre) {
-        pageNumber = pageNum;
-        modifiedUrl = Urls.main + "/genre/${genre.toValue()}?page=$pageNum";
-      },
-    );
+class SearchNetworkRepo {
+  static Future<Result<List<Anime>>> get(String keyword, int page) async {
+    String modifiedUrl =
+        Urls.main + "//search.html?keyword=$keyword&page=$page";
+    int pageNumber = page;
 
     try {
       if (pageNumber < 1) throw InvalidArgsError();
@@ -46,6 +21,9 @@ class HomeNetworkRepo {
 
       List<Anime> returnValue = [];
       final $ = parser.parse(res.body);
+      if ($.querySelector('#wrapper_bg') == null) {
+        return Result.success(returnValue);
+      }
       $
           .querySelector('#wrapper_bg')!
           .querySelectorAll('div.last_episodes ul li')
@@ -61,15 +39,15 @@ class HomeNetworkRepo {
         final r = value.querySelector(".released");
         if (r != null) {
           final regexp = RegExp(r'\d+');
-          released = int.parse(regexp.firstMatch(r.innerHtml)!.group(0)!);
+          released = int.parse(regexp.firstMatch(r.innerHtml)?.group(0) ?? "0");
         }
         if (a != null) {
-          img = (a.attributes['src']!);
-          name = (a.attributes['alt']!);
+          img = (a.attributes['src'] ?? "");
+          name = (a.attributes['alt'] ?? "");
         }
         if (b != null) {
           final regexp = RegExp(r'\d+');
-          episode = int.parse(regexp.firstMatch(b.innerHtml)!.group(0)!);
+          episode = int.parse(regexp.firstMatch(b.innerHtml)?.group(0) ?? "0");
         }
         final c = value.querySelector(".name a");
         if (c != null) {
@@ -94,15 +72,5 @@ class HomeNetworkRepo {
       return const Result.error(
           "Something is wrong!,Please check your internet connection and try again.");
     }
-  }
-}
-
-class InvalidArgsError extends Error {
-  String? message;
-  InvalidArgsError([this.message]);
-
-  @override
-  String toString() {
-    return message ?? "Please provide vaild arguments";
   }
 }
