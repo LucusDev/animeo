@@ -81,7 +81,13 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                     child: InfiniteScrollList(
                   totalCount: searches.length,
                   itemBuilder: (context, index) {
-                    return const CustomTile(
+                    return CustomTile(
+                      onTap: () async {
+                        await CachedImage(
+                          url:
+                              'https://i.pinimg.com/originals/62/3a/a8/623aa8f9933ee9a286871bf6e0782538.jpg',
+                        ).copyToPath("");
+                      },
                       title: Text("One Punch Man"),
                       subtitle: Text("Episode-1"),
                       leading: CustomCard(

@@ -49,6 +49,8 @@ dependencies:
   html: ^0.15.0
   visibility_detector: ^0.2.2
   fluttertoast: ^8.0.8
+  path_provider: ^2.0.8
+  open_file: ^3.2.1
   #custom packages
 
 dev_dependencies:
