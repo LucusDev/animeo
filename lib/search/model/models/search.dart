@@ -13,8 +13,9 @@ class Search {
   }
 
   Future<Search> setSearch(List<String> searches) async {
+    final l = [...this.searches, ...searches.reversed];
     final rV = copyWith(
-      searches: [...this.searches, ...searches],
+      searches: l.length > 20 ? l.sublist(0, 20) : l,
     );
     await getIt<SearchDB>().setSearch(rV);
     return rV;

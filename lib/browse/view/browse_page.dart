@@ -1,53 +1,56 @@
-import 'package:animeo/core/models/anime.dart';
-import 'package:animeo/core/models/result.dart';
-import 'package:animeo/core/widgets/cached_image.dart';
 import 'package:animeo/core/widgets/custom_card.dart';
 import 'package:animeo/core/widgets/custom_scaffold.dart';
-import 'package:animeo/core/widgets/custom_tile.dart';
-import 'package:animeo/core/widgets/infinite_scroll_list.dart';
 import 'package:animeo/core/widgets/tag.dart';
-import 'package:animeo/home/model/models/home_network_page.dart';
-import 'package:animeo/home/model/network/network_repo.dart';
-import 'package:animeo/home/view/widgets/home_tab_page.dart';
-import 'package:animeo/search/model/models/search.dart';
+import 'package:animeo/browse/model/models/browse_network_page.dart';
+import 'package:animeo/browse/view/widgets/browse_tab_page.dart';
 import 'package:animeo/search/view/search_page.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/diagnostics.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 import 'package:sizer/sizer.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+class BrowsePage extends StatefulWidget {
+  const BrowsePage({Key? key}) : super(key: key);
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<BrowsePage> createState() => _BrowsePageState();
 }
 
-class _HomePageState extends State<HomePage>
+class _BrowsePageState extends State<BrowsePage>
     with AutomaticKeepAliveClientMixin {
   final PageController _controller = PageController(
     keepPage: true,
   );
+  Season? season;
+  int? year;
   Genres genre = Genres.action;
   late final pages = [
-    HomeTabPage(
+    BrowseTabPage(
       getHomeTabType: (pageNum) {
-        return HomeNetworkPage.recent(pageNum);
+        return BrowseNetworkPage.recent(pageNum);
       },
     ),
-    HomeTabPage(
+    BrowseTabPage(
       getHomeTabType: (pageNum) {
-        return HomeNetworkPage.popular(pageNum);
+        return BrowseNetworkPage.popular(pageNum);
       },
     ),
-    HomeTabPage(
+    BrowseTabPage(
       getHomeTabType: (pageNum) {
-        return HomeNetworkPage.seasonal(pageNum);
+        return BrowseNetworkPage.seasonal(
+          pageNum,
+          season: season,
+          year: year,
+        );
+      },
+      changeSeason: (season, year) {
+        this.season = season;
+        this.year = year;
+        setState(() {});
       },
     ),
-    HomeTabPage(
+    BrowseTabPage(
       getHomeTabType: (pageNum) {
-        return HomeNetworkPage.genres(pageNum, genre: genre);
+        return BrowseNetworkPage.genres(pageNum, genre: genre);
       },
       changeGenre: (genres) {
         setState(() {
@@ -65,6 +68,7 @@ class _HomePageState extends State<HomePage>
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
       body: CustomScaffold(
         child: Column(
