@@ -1,9 +1,14 @@
 import 'package:animeo/core/models/anime.dart';
+import 'package:animeo/core/network/core_repo.dart';
+import 'package:animeo/core/utils/navigate.dart';
+import 'package:animeo/core/utils/toast.dart';
+import 'package:animeo/core/widgets/anime_detail_page.dart';
 import 'package:animeo/core/widgets/cached_image.dart';
 import 'package:animeo/core/widgets/custom_card.dart';
 import 'package:animeo/core/widgets/custom_scaffold.dart';
 import 'package:animeo/core/widgets/custom_tile.dart';
 import 'package:animeo/core/widgets/infinite_scroll_list.dart';
+import 'package:animeo/core/widgets/loading.dart';
 import 'package:animeo/core/widgets/tag.dart';
 import 'package:animeo/browse/model/models/browse_network_page.dart';
 import 'package:animeo/browse/model/network/network_repo.dart';
@@ -288,6 +293,22 @@ class _BrowseTabPageState extends State<BrowseTabPage>
                 itemBuilder: (context, index) {
                   final strings = data.elementAt(index).title.split('\n');
                   return CustomTile(
+                    onTap: () async {
+                      final result = await loading(
+                        context,
+                        CoreNetworkRepo.animeHandler(data.elementAt(index).id),
+                      );
+                      result.when(
+                        success: (value) {
+                          navigate(context,
+                              page: AnimeDetailPage(anime: value));
+                        },
+                        error: (message) {
+                          showToast(
+                              message: "Something is wrong! Please try again.");
+                        },
+                      );
+                    },
                     leading: CustomCard(
                       padding: EdgeInsets.zero,
                       child: AspectRatio(

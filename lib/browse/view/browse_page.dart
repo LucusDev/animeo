@@ -1,3 +1,4 @@
+import 'package:animeo/core/utils/navigate.dart';
 import 'package:animeo/core/widgets/custom_card.dart';
 import 'package:animeo/core/widgets/custom_scaffold.dart';
 import 'package:animeo/core/widgets/tag.dart';
@@ -201,11 +202,7 @@ class _BrowsePageState extends State<BrowsePage>
                 ),
                 GestureDetector(
                   onTap: () {
-                    Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) {
-                        return const SearchPage();
-                      },
-                    ));
+                    navigate(context, page: const SearchPage());
                   },
                   child: Hero(
                     tag: "search_icon",

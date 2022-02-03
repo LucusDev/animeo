@@ -5,7 +5,7 @@ import 'package:animeo/core/widgets/custom_scaffold.dart';
 import 'package:animeo/core/widgets/custom_tile.dart';
 import 'package:animeo/core/widgets/headline.dart';
 import 'package:animeo/core/widgets/infinite_scroll_list.dart';
-import 'package:animeo/core/widgets/nav_back_button.dart';
+import 'package:animeo/core/widgets/appbar_button.dart';
 import 'package:animeo/main.dart';
 import 'package:animeo/search/controller/search_provider.dart';
 import 'package:animeo/search/model/database/search_db.dart';
