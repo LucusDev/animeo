@@ -1,7 +1,7 @@
 import 'package:animeo/core/widgets/custom_card.dart';
 
 import 'package:animeo/core/widgets/custom_tile.dart';
-import 'package:animeo/core/widgets/nav_back_button.dart';
+import 'package:animeo/core/widgets/appbar_button.dart';
 import 'package:animeo/settings/view/widgets/appearance_page.dart';
 
 import 'package:flutter/material.dart';

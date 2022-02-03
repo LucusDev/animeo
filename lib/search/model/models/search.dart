@@ -13,10 +13,11 @@ class Search {
   }
 
   Future<Search> setSearch(List<String> searches) async {
+    final newSearch = [...this.searches];
     for (var element in searches) {
-      this.searches.remove(element);
+      newSearch.remove(element);
     }
-    final l = [...this.searches, ...searches.reversed];
+    final l = [...newSearch, ...searches.reversed];
     final rV = copyWith(
       searches: l.length > 20 ? l.sublist(0, 20) : l,
     );

@@ -3,6 +3,7 @@ import 'package:animeo/bottom_navigation/view/widgets/custom_bottom_navigation.d
 import 'package:animeo/browse/view/browse_page.dart';
 import 'package:animeo/core/widgets/custom_scaffold.dart';
 import 'package:animeo/core/widgets/custom_card.dart';
+import 'package:animeo/core/widgets/loading.dart';
 import 'package:animeo/settings/view/widgets/settings_navigation.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

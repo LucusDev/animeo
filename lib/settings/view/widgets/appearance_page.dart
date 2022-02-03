@@ -1,5 +1,5 @@
 import 'package:animeo/core/widgets/custom_tile.dart';
-import 'package:animeo/core/widgets/nav_back_button.dart';
+import 'package:animeo/core/widgets/appbar_button.dart';
 import 'package:animeo/settings/controller/settings_provider.dart';
 import 'package:animeo/settings/utils/enums.dart';
 import 'package:flutter/material.dart';

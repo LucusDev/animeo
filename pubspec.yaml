@@ -51,6 +51,8 @@ dependencies:
   fluttertoast: ^8.0.8
   path_provider: ^2.0.8
   open_file: ^3.2.1
+  webview_flutter: ^3.0.0
+
   #custom packages
 
 dev_dependencies:
