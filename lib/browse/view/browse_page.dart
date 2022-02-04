@@ -72,6 +72,7 @@ class _BrowsePageState extends State<BrowsePage>
     super.build(context);
     return Scaffold(
       body: CustomScaffold(
+        hideOnScroll: true,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -88,6 +89,7 @@ class _BrowsePageState extends State<BrowsePage>
                         _controller.animateToPage(0,
                             duration: const Duration(milliseconds: 200),
                             curve: Curves.ease);
+
                         setState(() {});
                       },
                       text: "Recent",
@@ -102,6 +104,7 @@ class _BrowsePageState extends State<BrowsePage>
                         _controller.animateToPage(1,
                             duration: const Duration(milliseconds: 200),
                             curve: Curves.ease);
+
                         setState(() {});
                       },
                       text: "Popular",
@@ -116,6 +119,7 @@ class _BrowsePageState extends State<BrowsePage>
                         _controller.animateToPage(2,
                             duration: const Duration(milliseconds: 200),
                             curve: Curves.ease);
+
                         setState(() {});
                       },
                       text: "Seasonal",
@@ -130,6 +134,7 @@ class _BrowsePageState extends State<BrowsePage>
                         _controller.animateToPage(3,
                             duration: const Duration(milliseconds: 200),
                             curve: Curves.ease);
+
                         setState(() {});
                       },
                       text: "Genre",

@@ -22,7 +22,6 @@ class SearchDB extends Db<Search> {
     Search rV = const Search();
     await auto(() async {
       if (db.isNotEmpty) {
-        print("getting searches");
         rV = db.values.first;
       }
     });

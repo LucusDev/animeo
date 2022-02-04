@@ -1,6 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.lucus.animeo">
    <application
+          android:usesCleartextTraffic="true"
         android:label="animeo"
         android:icon="@mipmap/ic_launcher">
         <activity

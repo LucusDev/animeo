@@ -12,6 +12,7 @@ import 'package:animeo/core/widgets/loading.dart';
 import 'package:animeo/core/widgets/tag.dart';
 import 'package:animeo/browse/model/models/browse_network_page.dart';
 import 'package:animeo/browse/model/network/network_repo.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 import 'package:animeo/core/utils/extensions.dart';
@@ -220,30 +221,51 @@ class _BrowseTabPageState extends State<BrowseTabPage>
                                     appBar: AppBar(
                                       automaticallyImplyLeading: false,
                                       centerTitle: true,
-                                      title: const Text("Seasons"),
+                                      title: Text(
+                                        "Seasons",
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .headline1,
+                                      ),
                                       actions: [
-                                        IconButton(
-                                            onPressed: () {
-                                              value.maybeWhen(
-                                                orElse: () {},
-                                                seasonal: (pageNum, ss, yy) {
-                                                  Navigator.pop(context);
-                                                  if (ss == season &&
-                                                      yy == year) return;
-                                                  if (widget.changeSeason !=
-                                                      null) {
-                                                    widget.changeSeason!(
-                                                      season,
-                                                      year,
-                                                    );
-                                                  }
-                                                  refresh();
-                                                },
-                                              );
-                                            },
-                                            icon: const Icon(
-                                              Icons.cancel,
-                                            ))
+                                        Row(
+                                          children: [
+                                            GestureDetector(
+                                              onTap: () {
+                                                value.maybeWhen(
+                                                  orElse: () {},
+                                                  seasonal: (pageNum, ss, yy) {
+                                                    Navigator.pop(context);
+                                                    if (ss == season &&
+                                                        yy == year) return;
+                                                    if (widget.changeSeason !=
+                                                        null) {
+                                                      widget.changeSeason!(
+                                                        season,
+                                                        year,
+                                                      );
+                                                    }
+                                                    refresh();
+                                                  },
+                                                );
+                                              },
+                                              child: SizedBox(
+                                                width: 40,
+                                                height: 40,
+                                                child: CustomCard(
+                                                  padding: EdgeInsets.zero,
+                                                  child: Expanded(
+                                                    child: Icon(
+                                                      Icons.cancel,
+                                                      color: Theme.of(context)
+                                                          .primaryColor,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
                                       ],
                                     ),
                                   ),
@@ -300,8 +322,18 @@ class _BrowseTabPageState extends State<BrowseTabPage>
                       );
                       result.when(
                         success: (value) {
+                          int epNum = -1;
+                          if (strings.length > 1) {
+                            epNum = int.tryParse(strings
+                                    .elementAt(1)
+                                    .replaceAll("Episode-", "")) ??
+                                -1;
+                          }
                           navigate(context,
-                              page: AnimeDetailPage(anime: value));
+                              page: AnimeDetailPage(
+                                anime: value,
+                                hightlightEpisode: epNum - 1,
+                              ));
                         },
                         error: (message) {
                           showToast(

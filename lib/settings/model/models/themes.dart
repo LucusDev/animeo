@@ -4,6 +4,9 @@ class CustomTheme {
   static final ThemeData light = ThemeData.light().copyWith(
     splashColor: const Color.fromRGBO(48, 79, 254, 1),
     textTheme: const TextTheme(
+      bodyText1: TextStyle(
+        color: Colors.white,
+      ),
       headline1: TextStyle(
         overflow: TextOverflow.ellipsis,
         fontSize: 25,
@@ -45,6 +48,9 @@ class CustomTheme {
         border: InputBorder.none, fillColor: Color.fromRGBO(20, 20, 20, 1)),
     errorColor: const Color.fromRGBO(37, 14, 19, 1),
     textTheme: const TextTheme(
+        bodyText1: TextStyle(
+          color: Color.fromRGBO(37, 37, 37, 1),
+        ),
         headline1: TextStyle(
           overflow: TextOverflow.ellipsis,
           fontSize: 25,

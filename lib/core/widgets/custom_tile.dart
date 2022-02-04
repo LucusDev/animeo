@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class CustomTile extends StatelessWidget {
   final Widget? leading;
-  final Text? title;
+  final Widget? title;
   final Text? subtitle;
   final Widget? trailing;
   final double? width;

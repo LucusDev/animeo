@@ -9,6 +9,7 @@ import 'package:animeo/settings/controller/settings_provider.dart';
 import 'package:animeo/settings/index.dart';
 import 'package:flutter/material.dart';
 import 'package:animeo/settings/model/database/settings_db.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -26,7 +27,6 @@ Future<void> init() async {
 
 void main() async {
   await init();
-
   runApp(
     ProviderScope(
       overrides: [
