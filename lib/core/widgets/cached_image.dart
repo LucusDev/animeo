@@ -34,7 +34,10 @@ class CachedImage extends StatelessWidget {
       fadeInDuration: Duration.zero,
       placeholderFadeInDuration: Duration.zero,
       fadeOutDuration: Duration.zero,
-      placeholder: (context, url) => const SizedBox.expand(),
+      placeholder: (context, url) => const AspectRatio(
+        aspectRatio: 4 / 3,
+        child: SizedBox.expand(),
+      ),
       // progressIndicatorBuilder: progressIndicatorBuilder ??
       //     (context, url, progress) {
       //       return Center(
