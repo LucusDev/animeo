@@ -36,9 +36,28 @@ class AnimeDetailPage extends StatelessWidget {
               ),
             ),
             GenreRow(anime: anime),
-            HeadLine(text: "${anime.totalEpisodes} Episodes"),
+            HeadLine(
+              text: "${anime.totalEpisodes} Episodes",
+              icon: const Icon(Icons.sort),
+              onClick: () {
+                //TODO sorting from top or bottom add
+                // showModalBottomSheet(
+                //   context: context,
+                //   builder: (context) {
+                //     return Container(
+                //       width: 100.w,
+                //       height: 30.h,
+                //       child: Column(
+                //         children: [],
+                //       ),
+                //     );
+                //   },
+                // );
+              },
+            ),
             EpisodeList(
-              hightlightEpisode: hightlightEpisode,
+              // hightlightEpisode: hightlightEpisode,
+              hightlightEpisode: -1,
               theme: theme,
               anime: anime,
             )

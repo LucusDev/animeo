@@ -24,13 +24,14 @@ class InfiniteScrollList extends ConsumerStatefulWidget {
 }
 
 class _InfiniteScrollListState extends ConsumerState<InfiniteScrollList> {
-  double currentOffset = 0;
+  // double currentOffset = 0;
   bool isUp = true;
   final _c = ScrollController();
   @override
   void initState() {
     _c.addListener(() {
       final newOffset = _c.offset;
+      final currentOffset = ref.read(scrollOffsetProvider);
       if ((currentOffset - newOffset).abs() > 50) {
         if (currentOffset > newOffset) {
           if (!isUp) {
@@ -43,7 +44,7 @@ class _InfiniteScrollListState extends ConsumerState<InfiniteScrollList> {
             ref.read(scrollStreamProvider).sink.add(isUp);
           }
         }
-        currentOffset = newOffset;
+        ref.read(scrollOffsetProvider.notifier).setOffset(newOffset);
       }
     });
 

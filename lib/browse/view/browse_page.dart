@@ -1,3 +1,4 @@
+import 'package:animeo/bottom_navigation/controller/bottom_nav_provider.dart';
 import 'package:animeo/core/utils/navigate.dart';
 import 'package:animeo/core/widgets/custom_card.dart';
 import 'package:animeo/core/widgets/custom_scaffold.dart';
@@ -6,17 +7,18 @@ import 'package:animeo/browse/model/models/browse_network_page.dart';
 import 'package:animeo/browse/view/widgets/browse_tab_page.dart';
 import 'package:animeo/search/view/search_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 import 'package:sizer/sizer.dart';
 
-class BrowsePage extends StatefulWidget {
+class BrowsePage extends ConsumerStatefulWidget {
   const BrowsePage({Key? key}) : super(key: key);
 
   @override
-  State<BrowsePage> createState() => _BrowsePageState();
+  ConsumerState<BrowsePage> createState() => _BrowsePageState();
 }
 
-class _BrowsePageState extends State<BrowsePage>
+class _BrowsePageState extends ConsumerState<BrowsePage>
     with AutomaticKeepAliveClientMixin {
   final PageController _controller = PageController(
     keepPage: true,
@@ -85,11 +87,12 @@ class _BrowsePageState extends State<BrowsePage>
                     padding: const EdgeInsets.all(8.0),
                     child: Tag(
                       onClick: () {
+                        ref.read(scrollOffsetProvider.notifier).setOffset(0);
+                        ref.read(scrollStreamProvider).sink.add(true);
                         currentPage = 0;
                         _controller.animateToPage(0,
                             duration: const Duration(milliseconds: 200),
                             curve: Curves.ease);
-
                         setState(() {});
                       },
                       text: "Recent",
@@ -100,6 +103,8 @@ class _BrowsePageState extends State<BrowsePage>
                     padding: const EdgeInsets.all(8.0),
                     child: Tag(
                       onClick: () {
+                        ref.read(scrollOffsetProvider.notifier).setOffset(0);
+                        ref.read(scrollStreamProvider).sink.add(true);
                         currentPage = 1;
                         _controller.animateToPage(1,
                             duration: const Duration(milliseconds: 200),
@@ -115,6 +120,8 @@ class _BrowsePageState extends State<BrowsePage>
                     padding: const EdgeInsets.all(8.0),
                     child: Tag(
                       onClick: () {
+                        ref.read(scrollOffsetProvider.notifier).setOffset(0);
+                        ref.read(scrollStreamProvider).sink.add(true);
                         currentPage = 2;
                         _controller.animateToPage(2,
                             duration: const Duration(milliseconds: 200),
@@ -130,6 +137,8 @@ class _BrowsePageState extends State<BrowsePage>
                     padding: const EdgeInsets.all(8.0),
                     child: Tag(
                       onClick: () {
+                        ref.read(scrollOffsetProvider.notifier).setOffset(0);
+                        ref.read(scrollStreamProvider).sink.add(true);
                         currentPage = 3;
                         _controller.animateToPage(3,
                             duration: const Duration(milliseconds: 200),

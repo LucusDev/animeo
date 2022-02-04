@@ -1,31 +1,103 @@
+import 'package:animeo/core/utils/navigate.dart';
 import 'package:animeo/core/widgets/appbar_button.dart';
+import 'package:animeo/core/widgets/fullscreen.dart';
 import 'package:flutter/material.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:syncfusion_flutter_sliders/sliders.dart';
 import 'package:video_player/video_player.dart';
 
 import 'package:fijkplayer/fijkplayer.dart';
+part 'video_player_panel.freezed.dart';
+
+String _printDuration(Duration duration) {
+  String twoDigits(int n) => n.toString().padLeft(2, "0");
+  String oneDigits(String s) {
+    if (s.length > 1) {
+      return s[0] == "0" ? s[1] : s;
+    }
+    return s;
+  }
+
+  String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
+  String twoDigitSeconds = twoDigits(duration.inSeconds.remainder(60));
+  String hour = twoDigits(duration.inHours);
+  return "${hour == "00" ? "" : hour + ":"}${oneDigits(twoDigitMinutes)}:$twoDigitSeconds";
+}
+
+@freezed
+abstract class CustomVideoControllerType with _$CustomVideoControllerType {
+  const factory CustomVideoControllerType.online(FijkPlayer controller) =
+      _Online;
+  const factory CustomVideoControllerType.offline(
+      VideoPlayerController controller) = _Offline;
+}
 
 class CustomVideoController {
-  // final VoidCallback play;
-  // final VoidCallback pause;
-  // final VoidCallback enterFullScreen;
-  // final VoidCallback exitFullScreen;
+  final VoidCallback play;
+  final VoidCallback pause;
+  final void Function(Duration duration) seekTo;
+  final CustomVideoControllerType type;
+  const CustomVideoController({
+    required this.play,
+    required this.pause,
+    required this.seekTo,
+    required this.type,
+  });
 
-  // const CustomVideoController({
-  //   required this.play,
-  //   required this.pause,
-  //   required this.enterFullScreen,
-  //   required this.exitFullScreen,
-  // });
+  factory CustomVideoController.fromVideoControllerType(
+    CustomVideoControllerType type,
+  ) {
+    return type.map(
+      online: (value) {
+        final controller = value.controller;
+        return CustomVideoController(
+          type: type,
+          play: () {
+            controller.start();
+          },
+          pause: () {
+            controller.pause();
+          },
+          seekTo: (duration) {
+            controller.seekTo(duration.inMilliseconds);
+          },
+        );
+      },
+      offline: (value) {
+        final controller = value.controller;
+        return CustomVideoController(
+          type: type,
+          play: () {
+            controller.play();
+          },
+          pause: () {
+            controller.pause();
+          },
+          seekTo: (duration) {
+            controller.seekTo(duration);
+          },
+        );
+      },
+    );
+  }
 }
 
 class VideoPlayerPanel extends StatefulWidget {
   final Widget child;
+  final bool isFullScreen;
+  final bool isPlaying;
   final CustomVideoController controller;
+  final Duration currentDuration;
+  final Duration totalDuration;
+
   const VideoPlayerPanel({
     Key? key,
     required this.child,
     required this.controller,
+    this.isFullScreen = false,
+    this.isPlaying = false,
+    this.currentDuration = Duration.zero,
+    this.totalDuration = Duration.zero,
   }) : super(key: key);
 
   @override
@@ -33,9 +105,83 @@ class VideoPlayerPanel extends StatefulWidget {
 }
 
 class _VideoPlayerPanelState extends State<VideoPlayerPanel> {
+  bool isPlaying = false;
+  bool isSeeking = false;
+  late bool isFullScreen;
+  late Duration currentDuration;
+  late Duration totalDuration;
+  Duration seekDuration = Duration.zero;
+
   @override
   void initState() {
+    isFullScreen = widget.isFullScreen;
+    currentDuration = widget.currentDuration;
+    totalDuration = widget.totalDuration;
+    widget.controller.type.when(
+      online: (controller) {
+        if (isFullScreen && widget.isPlaying) {
+          Future.delayed(Duration.zero).then((value) => controller.start());
+        }
+        controller.addListener(() {
+          totalDuration = controller.value.duration;
+          isPlaying = controller.state == FijkState.started;
+          controller.onCurrentPosUpdate.listen((posiion) {
+            currentDuration = posiion;
+            if (mounted) setState(() {});
+          });
+          if (mounted) setState(() {});
+        });
+      },
+      offline: (controller) {
+        if (!controller.value.isInitialized) {
+          controller.initialize();
+        }
+        controller.addListener(() {
+          totalDuration = controller.value.duration;
+          isPlaying = controller.value.isPlaying;
+          currentDuration = controller.value.position;
+          if (mounted) setState(() {});
+        });
+      },
+    );
     super.initState();
+  }
+
+  void enterFullScreen() {
+    widget.controller.type.maybeWhen(
+      orElse: () {
+        pushFullScreenVideo(
+          context,
+          VideoPlayerPanel(
+            isFullScreen: true,
+            child: widget.child,
+            controller: widget.controller,
+            currentDuration: currentDuration,
+            totalDuration: totalDuration,
+          ),
+        );
+      },
+      online: (controller) async {
+        if (isPlaying) {
+          await controller.pause();
+        }
+        pushFullScreenVideo(
+          context,
+          VideoPlayerPanel(
+            isFullScreen: true,
+            child: widget.child,
+            controller: widget.controller,
+            currentDuration: currentDuration,
+            totalDuration: totalDuration,
+            isPlaying: isPlaying,
+          ),
+        );
+      },
+    );
+  }
+
+  void exitFullScreen() {
+    Navigator.pop(context);
   }
 
   @override
@@ -51,89 +197,166 @@ class _VideoPlayerPanelState extends State<VideoPlayerPanel> {
         delegate: CustomLayout(),
         children: [
           LayoutId(
-            child: widget.child,
+            child: GestureDetector(
+              child: widget.child,
+              onTap: () {},
+            ),
             id: "video",
           ),
           LayoutId(
-            child: Row(
-              children: [
-                const SizedBox(
-                  width: 5,
-                ),
-                IconButton(
-                    onPressed: () {}, icon: const Icon(Icons.arrow_back)),
-                const Spacer(),
-                IconButton(
-                  onPressed: () {},
-                  icon: const Icon(Icons.more_horiz),
-                ),
-                const SizedBox(
-                  width: 5,
-                ),
-              ],
+            child: Container(
+              color: Colors.black.withOpacity(0.15),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(
+                    width: 5,
+                  ),
+                  IconButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      icon: const Icon(Icons.arrow_back)),
+                  const Spacer(),
+                  IconButton(
+                    onPressed: () {
+                      // enterFullScreen();
+                    },
+                    icon: const Icon(Icons.more_horiz),
+                  ),
+                  const SizedBox(
+                    width: 5,
+                  ),
+                ],
+              ),
             ),
             id: "header",
           ),
           LayoutId(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                IconButton(
-                  onPressed: () {},
-                  icon: const Icon(Icons.replay_10),
-                ),
-                IconButton(
-                  onPressed: () {},
-                  icon: Icon(Icons.play_arrow),
-                ),
-                IconButton(
-                  onPressed: () {},
-                  icon: const Icon(Icons.forward_10),
-                ),
-              ],
+            child: Container(
+              color: Colors.black.withOpacity(0.15),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  IconButton(
+                    onPressed: () {
+                      widget.controller.seekTo(
+                          Duration(seconds: currentDuration.inSeconds - 10));
+                    },
+                    icon: const Icon(Icons.replay_10),
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      isPlaying
+                          ? widget.controller.pause()
+                          : widget.controller.play();
+                    },
+                    icon: Icon(isPlaying ? Icons.pause : Icons.play_arrow),
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      widget.controller.seekTo(
+                          Duration(seconds: currentDuration.inSeconds + 10));
+                    },
+                    icon: const Icon(Icons.forward_10),
+                  ),
+                ],
+              ),
             ),
             id: "body",
           ),
           LayoutId(
-            child: Column(
-              children: [
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: Row(
-                      children: [
-                        Text(
-                          "4:37/44:07",
-                          style: TextStyle(
-                            color: Theme.of(context).primaryColor,
+            child: Container(
+              color: Colors.black.withOpacity(0.15),
+              child: Column(
+                children: [
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(
+                              bottom: 8.0,
+                              left: 8,
+                              top: 0,
+                            ),
+                            // padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              "${isSeeking ? _printDuration(seekDuration) : _printDuration(currentDuration)}/${_printDuration(totalDuration)}",
+                              style: TextStyle(
+                                color: Theme.of(context).primaryColor,
+                              ),
+                            ),
                           ),
-                        ),
-                        const Spacer(),
-                        IconButton(
-                          onPressed: () {},
-                          icon: const Icon(Icons.fullscreen),
-                        ),
-                      ],
+                          const Spacer(),
+                          Padding(
+                            padding: const EdgeInsets.only(
+                              bottom: 8.0,
+                              right: 8,
+                              top: 0,
+                            ),
+                            child: GestureDetector(
+                              onTap: () {
+                                isFullScreen
+                                    ? exitFullScreen()
+                                    : enterFullScreen();
+                              },
+                              child: Icon(
+                                isFullScreen
+                                    ? Icons.fullscreen_exit
+                                    : Icons.fullscreen,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-                SizedBox(
-                  height: 10,
-                  child: SliderTheme(
-                    data: SliderThemeData(
-                      trackShape: CustomTrackShape(),
-                      trackHeight: 1.5,
-                      thumbShape:
-                          const RoundSliderThumbShape(enabledThumbRadius: 7),
-                      activeTrackColor: Colors.yellow,
-                    ),
-                    child: Slider(
-                      value: 1,
-                      onChanged: (value) {},
+                  Padding(
+                    padding: isFullScreen
+                        ? const EdgeInsets.only(bottom: 8.0, left: 8, right: 8)
+                        : EdgeInsets.zero,
+                    child: SizedBox(
+                      height: 10,
+                      child: SliderTheme(
+                        data: SliderThemeData(
+                          trackShape: CustomTrackShape(),
+                          trackHeight: 1.5,
+                          thumbColor: Colors.red.shade900,
+                          thumbShape: RoundSliderThumbShape(
+                              enabledThumbRadius: isFullScreen ? 7 : 0),
+                          activeTrackColor: Colors.red.shade900,
+                        ),
+                        child: Slider(
+                          value: isSeeking
+                              ? seekDuration.inMilliseconds.toDouble()
+                              : currentDuration.inMilliseconds.toDouble(),
+                          max: totalDuration.inMilliseconds.toDouble(),
+                          onChangeStart: (value) {
+                            isSeeking = true;
+                            seekDuration = currentDuration;
+                            setState(() {});
+                          },
+                          onChanged: (value) {
+                            seekDuration =
+                                Duration(milliseconds: value.toInt());
+                            setState(() {});
+                          },
+                          onChangeEnd: (value) {
+                            isSeeking = false;
+                            currentDuration =
+                                Duration(milliseconds: value.toInt());
+                            widget.controller.seekTo(currentDuration);
+                            setState(() {});
+                          },
+                        ),
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
             id: "video_slider",
           ),
@@ -155,6 +378,14 @@ class CustomLayout extends MultiChildLayoutDelegate {
           minWidth: maxSize.width,
           minHeight: maxSize.height / 5 * 1,
         ));
+    layoutChild(
+        "body",
+        BoxConstraints(
+          maxWidth: maxSize.width,
+          maxHeight: maxSize.height / 5 * 3,
+          minWidth: maxSize.width,
+          minHeight: maxSize.height / 5 * 3,
+        ));
     positionChild("header", const Offset(0, 0));
     final sliderSize = layoutChild(
         "video_slider",
@@ -168,21 +399,13 @@ class CustomLayout extends MultiChildLayoutDelegate {
       "video_slider",
       Offset(0, maxSize.height - sliderSize.height),
     );
-    layoutChild(
-        "body",
-        BoxConstraints(
-          maxWidth: maxSize.width,
-          maxHeight: maxSize.height / 5 * 3,
-          minWidth: maxSize.width,
-          minHeight: maxSize.height / 5 * 3,
-        ));
 
     positionChild("body", Offset(0, appbarSize.height));
   }
 
   @override
   bool shouldRelayout(covariant MultiChildLayoutDelegate oldDelegate) {
-    return true;
+    return false;
   }
 }
 
