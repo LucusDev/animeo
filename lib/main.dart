@@ -10,6 +10,7 @@ import 'package:animeo/settings/index.dart';
 import 'package:flutter/material.dart';
 import 'package:animeo/settings/model/database/settings_db.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -19,6 +20,18 @@ final getIt = GetIt.instance;
 
 Future<void> init() async {
   await Hive.initFlutter();
+  SystemChrome.setEnabledSystemUIMode(
+    SystemUiMode.manual,
+    overlays: SystemUiOverlay.values,
+  );
+  SystemChrome.setPreferredOrientations(
+    [
+      DeviceOrientation.portraitUp,
+      // DeviceOrientation.portraitDown,
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+    ],
+  );
   await SettingsFeature.init();
   await SearchFeature.init();
   getIt.registerSingleton<NavKey<MyApp>>(

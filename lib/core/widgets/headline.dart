@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class HeadLine extends StatelessWidget {
-  final Icon? icon;
+  final Widget? icon;
   final VoidCallback? onClick;
   final String text;
   const HeadLine({

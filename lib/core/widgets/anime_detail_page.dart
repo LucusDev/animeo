@@ -1,3 +1,4 @@
+import 'package:animeo/core/constants/state.dart';
 import 'package:animeo/core/models/anime.dart';
 import 'package:animeo/core/utils/navigate.dart';
 import 'package:animeo/core/widgets/appbar_button.dart';
@@ -11,7 +12,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 
-class AnimeDetailPage extends StatelessWidget {
+class AnimeDetailPage extends StatefulWidget {
   const AnimeDetailPage({
     Key? key,
     required this.anime,
@@ -21,50 +22,121 @@ class AnimeDetailPage extends StatelessWidget {
   final int hightlightEpisode;
 
   @override
+  State<AnimeDetailPage> createState() => _AnimeDetailPageState();
+}
+
+class _AnimeDetailPageState extends State<AnimeDetailPage> {
+  final TempState filter = TempState();
+
+  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            HeaderWithImage(theme: theme, anime: anime),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: SynopsisText(
-                anime: anime,
-                theme: theme,
-              ),
+        body: AnimatedBuilder(
+            animation: filter,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                HeaderWithImage(theme: theme, anime: widget.anime),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: SynopsisText(
+                    anime: widget.anime,
+                    theme: theme,
+                  ),
+                ),
+                GenreRow(anime: widget.anime),
+                Row(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(
+                        top: 8.0,
+                        left: 8.0,
+                        bottom: 4.0,
+                      ),
+                      child: Text(
+                        "${widget.anime.totalEpisodes} Episodes",
+                        style: Theme.of(context).textTheme.headline1,
+                      ),
+                    ),
+                    const Spacer(),
+                    DropdownButton<bool>(
+                      underline: const SizedBox(),
+                      hint: const SizedBox(),
+                      onChanged: (value) {
+                        filter.setisOldFirst(value ?? filter.isOldFirst);
+                      },
+                      items: const [
+                        DropdownMenuItem<bool>(
+                          child: Text("Older First"),
+                          value: true,
+                        ),
+                        DropdownMenuItem<bool>(
+                          child: Text("Newer First"),
+                          value: false,
+                        ),
+                      ],
+                      icon: Icon(
+                        Icons.sort,
+                        color: theme.primaryColor,
+                      ),
+                    ),
+                    const SizedBox(
+                      width: 10,
+                    ),
+                  ],
+                )
+              ],
             ),
-            GenreRow(anime: anime),
-            HeadLine(
-              text: "${anime.totalEpisodes} Episodes",
-              icon: const Icon(Icons.sort),
-              onClick: () {
-                //TODO sorting from top or bottom add
-                // showModalBottomSheet(
-                //   context: context,
-                //   builder: (context) {
-                //     return Container(
-                //       width: 100.w,
-                //       height: 30.h,
-                //       child: Column(
-                //         children: [],
-                //       ),
-                //     );
-                //   },
-                // );
-              },
-            ),
-            EpisodeList(
-              // hightlightEpisode: hightlightEpisode,
-              hightlightEpisode: -1,
-              theme: theme,
-              anime: anime,
-            )
-          ],
-        ),
-      ),
-    );
+            builder: (context, c) {
+              return ListView.builder(
+                itemBuilder: (context, i) {
+                  if (i == 0) {
+                    return c!;
+                  }
+                  int index = i - 1;
+                  if (!filter.isOldFirst) {
+                    index = widget.anime.episodes.length - i;
+                  }
+                  return ScrollTag(
+                    // scroll: widget.hightlightEpisode == index,
+                    scroll: false,
+                    child: CustomTile(
+                      onTap: () {
+                        //TODO watch add
+                        navigate(
+                          context,
+                          page: CustomVideoPlayer(),
+                        );
+                        print("watch");
+                      },
+                      color: widget.hightlightEpisode == index
+                          ? theme.primaryColor
+                          : null,
+                      title: Text(
+                        "Episode ${index + 1}",
+                        style:
+                            theme.textTheme.headline1!.copyWith(fontSize: 20),
+                      ),
+                      trailing: IconButton(
+                        iconSize: 30,
+                        onPressed: () {
+                          //TODO downloading add
+                          print("downloading");
+                        },
+                        icon: Icon(
+                          Icons.download_for_offline_outlined,
+                          color: widget.hightlightEpisode == index
+                              ? theme.textTheme.headline1!.color
+                              : null,
+                        ),
+                      ),
+                    ),
+                  );
+                },
+                itemCount: widget.anime.episodes.length + 1,
+              );
+            }));
   }
 }
 

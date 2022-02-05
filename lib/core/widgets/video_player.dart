@@ -3,7 +3,6 @@ import 'package:animeo/core/widgets/video_player_panel.dart';
 import 'package:fijkplayer/fijkplayer.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
-// import 'package:sizer/sizer.dart';
 
 class CustomVideoPlayer extends StatefulWidget {
   const CustomVideoPlayer({Key? key}) : super(key: key);
@@ -19,18 +18,19 @@ class _CustomVideoPlayerState extends State<CustomVideoPlayer> {
   void initState() {
     _controller = VideoPlayerController.network(
       "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
-    )..initialize();
+    )
+      ..initialize()
+      ..play();
 
     _c = FijkPlayer()
       ..setDataSource(
         "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
-        // autoPlay: true,
+        autoPlay: true,
       );
 
     super.initState();
   }
 
-// viewSize
   @override
   void dispose() {
     _controller.dispose();
@@ -40,7 +40,6 @@ class _CustomVideoPlayerState extends State<CustomVideoPlayer> {
     super.dispose();
   }
 
-// CustomVideoPlayerPanel
   @override
   Widget build(BuildContext context) {
     return Scaffold(
