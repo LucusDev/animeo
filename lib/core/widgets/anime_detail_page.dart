@@ -1,18 +1,21 @@
 import 'package:animeo/core/constants/state.dart';
 import 'package:animeo/core/models/anime.dart';
+import 'package:animeo/core/network/core_repo.dart';
 import 'package:animeo/core/utils/navigate.dart';
 import 'package:animeo/core/widgets/appbar_button.dart';
 import 'package:animeo/core/widgets/cached_image.dart';
+import 'package:animeo/core/widgets/custom_card.dart';
 import 'package:animeo/core/widgets/custom_tile.dart';
-import 'package:animeo/core/widgets/headline.dart';
+import 'package:animeo/core/widgets/loading.dart';
 import 'package:animeo/core/widgets/tag.dart';
 import 'package:animeo/core/widgets/video_player.dart';
-import 'package:animeo/core/widgets/video_player_panel.dart';
+import 'package:animeo/library/controller/library_provider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sizer/sizer.dart';
 
-class AnimeDetailPage extends StatefulWidget {
+class AnimeDetailPage extends ConsumerStatefulWidget {
   const AnimeDetailPage({
     Key? key,
     required this.anime,
@@ -22,121 +25,164 @@ class AnimeDetailPage extends StatefulWidget {
   final int hightlightEpisode;
 
   @override
-  State<AnimeDetailPage> createState() => _AnimeDetailPageState();
+  ConsumerState<AnimeDetailPage> createState() => _AnimeDetailPageState();
 }
 
-class _AnimeDetailPageState extends State<AnimeDetailPage> {
+class _AnimeDetailPageState extends ConsumerState<AnimeDetailPage> {
   final TempState filter = TempState();
+  late Anime anime = widget.anime;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Scaffold(
-        body: AnimatedBuilder(
-            animation: filter,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                HeaderWithImage(theme: theme, anime: widget.anime),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: SynopsisText(
-                    anime: widget.anime,
-                    theme: theme,
-                  ),
+        body: RefreshIndicator(
+      color: theme.primaryColor,
+      onRefresh: () async {
+        final result = await CoreNetworkRepo.animeHandler(anime.id);
+        result.when(
+          success: (value) {
+            anime = value;
+            ref
+                .read(libraryProvider.notifier)
+                .addToLibrary(value)
+                .then((value) {
+              print("success refreshing ");
+            });
+            setState(() {});
+          },
+          error: (message) {},
+        );
+      },
+      child: AnimatedBuilder(
+          animation: filter,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              HeaderWithImage(theme: theme, anime: anime),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: SynopsisText(
+                  anime: anime,
+                  theme: theme,
                 ),
-                GenreRow(anime: widget.anime),
-                Row(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(
-                        top: 8.0,
-                        left: 8.0,
-                        bottom: 4.0,
-                      ),
-                      child: Text(
-                        "${widget.anime.totalEpisodes} Episodes",
-                        style: Theme.of(context).textTheme.headline1,
-                      ),
+              ),
+              GenreRow(anime: anime),
+              Row(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(
+                      top: 8.0,
+                      left: 8.0,
+                      bottom: 4.0,
                     ),
-                    const Spacer(),
-                    DropdownButton<bool>(
-                      underline: const SizedBox(),
-                      hint: const SizedBox(),
-                      onChanged: (value) {
-                        filter.setisOldFirst(value ?? filter.isOldFirst);
-                      },
-                      items: const [
-                        DropdownMenuItem<bool>(
-                          child: Text("Older First"),
-                          value: true,
-                        ),
-                        DropdownMenuItem<bool>(
-                          child: Text("Newer First"),
-                          value: false,
-                        ),
-                      ],
-                      icon: Icon(
-                        Icons.sort,
-                        color: theme.primaryColor,
-                      ),
+                    child: Text(
+                      "${anime.totalEpisodes} Episodes",
+                      style: Theme.of(context).textTheme.headline1,
                     ),
-                    const SizedBox(
-                      width: 10,
-                    ),
-                  ],
-                )
-              ],
-            ),
-            builder: (context, c) {
-              return ListView.builder(
-                itemBuilder: (context, i) {
-                  if (i == 0) {
-                    return c!;
-                  }
-                  int index = i - 1;
-                  if (!filter.isOldFirst) {
-                    index = widget.anime.episodes.length - i;
-                  }
-                  return ScrollTag(
-                    // scroll: widget.hightlightEpisode == index,
-                    scroll: false,
-                    child: CustomTile(
-                      onTap: () {
-                        //TODO watch add
-                        navigate(
-                          context,
-                          page: CustomVideoPlayer(),
-                        );
-                        print("watch");
-                      },
-                      color: widget.hightlightEpisode == index
-                          ? theme.primaryColor
-                          : null,
-                      title: Text(
-                        "Episode ${index + 1}",
-                        style:
-                            theme.textTheme.headline1!.copyWith(fontSize: 20),
+                  ),
+                  const Spacer(),
+                  DropdownButton<bool>(
+                    underline: const SizedBox(),
+                    hint: const SizedBox(),
+                    onChanged: (value) {
+                      filter.setisOldFirst(value ?? filter.isOldFirst);
+                    },
+                    items: const [
+                      DropdownMenuItem<bool>(
+                        child: Text("Older First"),
+                        value: true,
                       ),
-                      trailing: IconButton(
-                        iconSize: 30,
-                        onPressed: () {
-                          //TODO downloading add
-                          print("downloading");
+                      DropdownMenuItem<bool>(
+                        child: Text("Newer First"),
+                        value: false,
+                      ),
+                    ],
+                    icon: Icon(
+                      Icons.sort,
+                      color: theme.primaryColor,
+                    ),
+                  ),
+                  const SizedBox(
+                    width: 10,
+                  ),
+                ],
+              )
+            ],
+          ),
+          builder: (context, c) {
+            return ListView.builder(
+              itemBuilder: (context, i) {
+                if (i == 0) {
+                  return c!;
+                }
+                int index = i - 1;
+                if (!filter.isOldFirst) {
+                  index = anime.episodes.length - i;
+                }
+                return ScrollTag(
+                  // scroll: widget.hightlightEpisode == index,
+                  scroll: false,
+                  child: CustomTile(
+                    onTap: () async {
+                      final iframe = await loading(context,
+                          animeEpisodeHandler(anime.episodes.elementAt(index)));
+
+                      iframe.when(
+                        success: (value) async {
+                          if (value.isNotEmpty) {
+                            final uu = await Navigator.of(context)
+                                .push<String>(PageRouteBuilder(
+                              opaque: false,
+                              pageBuilder:
+                                  (context, animation, secondaryAnimation) {
+                                return WebViewLoading(url: value);
+                              },
+                            ));
+                            if (uu != null) {
+                              navigate(
+                                context,
+                                page: CustomVideoPlayer(
+                                  url: uu,
+                                ),
+                              );
+                            }
+                            // print();
+                          }
                         },
-                        icon: Icon(
-                          Icons.download_for_offline_outlined,
-                          color: widget.hightlightEpisode == index
-                              ? theme.textTheme.headline1!.color
-                              : null,
-                        ),
+                        error: (message) {},
+                      );
+                      //TODO watch add
+
+                      print("watch");
+                    },
+                    color: widget.hightlightEpisode == index
+                        ? theme.primaryColor
+                        : null,
+                    title: Text(
+                      "Episode ${index + 1}",
+                      style: theme.textTheme.headline1!.copyWith(fontSize: 20),
+                    ),
+                    trailing: IconButton(
+                      iconSize: 30,
+                      onPressed: () {
+                        //TODO downloading add
+                        print("downloading");
+                      },
+                      icon: Icon(
+                        Icons.download_for_offline_outlined,
+                        color: widget.hightlightEpisode == index
+                            ? theme.textTheme.headline1!.color
+                            : null,
                       ),
                     ),
-                  );
-                },
-                itemCount: widget.anime.episodes.length + 1,
-              );
-            }));
+                  ),
+                );
+              },
+              itemCount: anime.episodes.length + 1,
+            );
+          }),
+    ));
   }
 }
 
@@ -162,10 +208,10 @@ class EpisodeList extends StatelessWidget {
           child: CustomTile(
             onTap: () {
               //TODO watch add
-              navigate(
-                context,
-                page: CustomVideoPlayer(),
-              );
+              // navigate(
+              //   context,
+              //   page: CustomVideoPlayer(),
+              // );
               print("watch");
             },
             color: hightlightEpisode == index ? theme.primaryColor : null,
@@ -358,10 +404,55 @@ class HeaderWithImage extends StatelessWidget {
         Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            AppBar(
-              backgroundColor: Colors.transparent,
-              leading: const AppbarButton(),
-              title: Text(
+            Consumer(
+              builder: (context, ref, c) {
+                // anime
+                final isInLibrary =
+                    ref.watch(libraryProvider).value[anime.id] == null
+                        ? false
+                        : true;
+
+                return AppBar(
+                  backgroundColor: Colors.transparent,
+                  leading: const AppbarButton(),
+                  title: c,
+                  actions: [
+                    Row(
+                      children: [
+                        GestureDetector(
+                          onTap: () async {
+                            if (isInLibrary) {
+                              await ref
+                                  .watch(libraryProvider.notifier)
+                                  .deleteFromLibrary(anime.id);
+                            } else {
+                              await ref
+                                  .watch(libraryProvider.notifier)
+                                  .addToLibrary(anime);
+                            }
+                          },
+                          child: SizedBox(
+                            width: 40,
+                            height: 40,
+                            child: CustomCard(
+                              padding: EdgeInsets.zero,
+                              child: Expanded(
+                                child: Icon(
+                                  isInLibrary
+                                      ? Icons.favorite
+                                      : Icons.favorite_border,
+                                  color: theme.primaryColor,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    )
+                  ],
+                );
+              },
+              child: Text(
                 anime.title,
                 style: Theme.of(context).textTheme.headline1,
               ),

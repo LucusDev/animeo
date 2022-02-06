@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:sizer/sizer.dart';
+import 'package:wakelock/wakelock.dart';
 
 void pushFullScreenVideo(
   BuildContext context,
@@ -32,6 +33,7 @@ void pushFullScreenVideo(
         Animation<double> animation,
         Animation<double> secondaryAnimation,
       ) {
+        Wakelock.enable();
         return Scaffold(
             extendBody: true,
             extendBodyBehindAppBar: true,

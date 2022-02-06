@@ -1,5 +1,9 @@
 import 'package:animeo/bottom_navigation/view/bottom_navigation.dart';
 import 'package:animeo/core/models/nav_key.dart';
+import 'package:animeo/library/controller/library_notifier.dart';
+import 'package:animeo/library/controller/library_provider.dart';
+import 'package:animeo/library/index.dart';
+import 'package:animeo/library/model/database/library_db.dart';
 import 'package:animeo/search/controller/search_notifier.dart';
 import 'package:animeo/search/controller/search_provider.dart';
 import 'package:animeo/search/index.dart';
@@ -34,6 +38,7 @@ Future<void> init() async {
   );
   await SettingsFeature.init();
   await SearchFeature.init();
+  await LibraryFeature.init();
   getIt.registerSingleton<NavKey<MyApp>>(
       NavKey(key: GlobalKey<NavigatorState>()));
 }
@@ -46,6 +51,8 @@ void main() async {
         searchProvider.overrideWithValue(
           SearchNotifier(await getIt<SearchDB>().getSearch()),
         ),
+        libraryProvider.overrideWithValue(
+            LibraryNotifier(await getIt<LibraryDb>().getAll())),
         settingsProvider.overrideWithValue(
             SettingsNotifier(await getIt<SettingsDb>().getSettings())),
       ],

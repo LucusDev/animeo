@@ -12,8 +12,10 @@ import 'package:animeo/core/widgets/loading.dart';
 import 'package:animeo/core/widgets/tag.dart';
 import 'package:animeo/browse/model/models/browse_network_page.dart';
 import 'package:animeo/browse/model/network/network_repo.dart';
+import 'package:animeo/library/controller/library_provider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 import 'package:animeo/core/utils/extensions.dart';
 
@@ -307,71 +309,92 @@ class _BrowseTabPageState extends State<BrowseTabPage>
           Expanded(
             child: RefreshIndicator(
               onRefresh: refresh,
-              child: InfiniteScrollList(
-                onEnd: fetch,
-                hideOnScroll: true,
-                totalCount: data.length,
-                isEnd: isEnd,
-                itemBuilder: (context, index) {
-                  final strings = data.elementAt(index).title.split('\n');
-                  return CustomTile(
-                    onTap: () async {
-                      final result = await loading(
-                        context,
-                        CoreNetworkRepo.animeHandler(data.elementAt(index).id),
-                      );
-                      result.when(
-                        success: (value) {
-                          int epNum = -1;
-                          if (strings.length > 1) {
-                            epNum = int.tryParse(strings
-                                    .elementAt(1)
-                                    .replaceAll("Episode-", "")) ??
-                                -1;
-                          }
+              child: Consumer(builder: (context, ref, _) {
+                return InfiniteScrollList(
+                  onEnd: fetch,
+                  hideOnScroll: true,
+                  totalCount: data.length,
+                  isEnd: isEnd,
+                  itemBuilder: (context, index) {
+                    final strings = data.elementAt(index).title.split('\n');
+                    int epNum = -1;
+                    if (strings.length > 1) {
+                      epNum = int.tryParse(strings
+                              .elementAt(1)
+                              .replaceAll("Episode-", "")) ??
+                          -1;
+                    }
+                    return CustomTile(
+                      onTap: () async {
+                        final isInLibrary = ref
+                                    .read(libraryProvider)
+                                    .value[data.elementAt(index).id] ==
+                                null
+                            ? false
+                            : true;
+                        if (isInLibrary) {
                           navigate(context,
                               page: AnimeDetailPage(
-                                anime: value,
+                                anime: ref
+                                    .read(libraryProvider)
+                                    .value[data.elementAt(index).id]!,
                                 hightlightEpisode: epNum - 1,
                               ));
-                        },
-                        error: (message) {
-                          showToast(
-                              message: "Something is wrong! Please try again.");
-                        },
-                      );
-                    },
-                    leading: CustomCard(
-                      padding: EdgeInsets.zero,
-                      child: AspectRatio(
-                        aspectRatio: 1 / 1,
-                        child: CachedImage(
-                          url: data.elementAt(index).img,
+
+                          return;
+                        }
+                        final result = await loading(
+                          context,
+                          CoreNetworkRepo.animeHandler(
+                              data.elementAt(index).id),
+                        );
+                        result.when(
+                          success: (value) {
+                            navigate(context,
+                                page: AnimeDetailPage(
+                                  anime: value,
+                                  hightlightEpisode: epNum - 1,
+                                ));
+                          },
+                          error: (message) {
+                            showToast(
+                                message:
+                                    "Something is wrong! Please try again.");
+                          },
+                        );
+                      },
+                      leading: CustomCard(
+                        padding: EdgeInsets.zero,
+                        child: AspectRatio(
+                          aspectRatio: 1 / 1,
+                          child: CachedImage(
+                            url: data.elementAt(index).img,
+                          ),
                         ),
                       ),
-                    ),
-                    title: strings.isNotEmpty
-                        ? Text(
-                            strings.elementAt(0),
-                            maxLines: 1,
-                          )
-                        : null,
-                    // subtitle: Text("Released: ${data.elementAt(index).released}"),
-                    subtitle: strings.length > 1
-                        ? Text(
-                            strings.elementAt(1),
-                          )
-                        : data.elementAt(index).released == 0
-                            ? null
-                            : Text(
-                                "Released: ${data.elementAt(index).released}"),
-                    trailing: const Icon(
-                      Icons.keyboard_arrow_right,
-                      color: Color.fromRGBO(80, 88, 253, 1),
-                    ),
-                  );
-                },
-              ),
+                      title: strings.isNotEmpty
+                          ? Text(
+                              strings.elementAt(0),
+                              maxLines: 1,
+                            )
+                          : null,
+                      // subtitle: Text("Released: ${data.elementAt(index).released}"),
+                      subtitle: strings.length > 1
+                          ? Text(
+                              strings.elementAt(1),
+                            )
+                          : data.elementAt(index).released == 0
+                              ? null
+                              : Text(
+                                  "Released: ${data.elementAt(index).released}"),
+                      trailing: const Icon(
+                        Icons.keyboard_arrow_right,
+                        color: Color.fromRGBO(80, 88, 253, 1),
+                      ),
+                    );
+                  },
+                );
+              }),
             ),
           ),
         ],

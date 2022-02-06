@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter/cupertino.dart';
 import 'package:riverpod/riverpod.dart';
 
 final scrollStreamProvider = Provider((ref) {

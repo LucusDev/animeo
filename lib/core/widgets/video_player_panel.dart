@@ -1,13 +1,12 @@
-import 'package:animeo/core/utils/navigate.dart';
-import 'package:animeo/core/widgets/appbar_button.dart';
 import 'package:animeo/core/widgets/fullscreen.dart';
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:syncfusion_flutter_sliders/sliders.dart';
 import 'package:video_player/video_player.dart';
 
 import 'package:fijkplayer/fijkplayer.dart';
 part 'video_player_panel.freezed.dart';
+
+const sValue = 1;
 
 String _printDuration(Duration duration) {
   String twoDigits(int n) => n.toString().padLeft(2, "0");
@@ -212,7 +211,7 @@ class _VideoPlayerPanelState extends State<VideoPlayerPanel> {
           // final sValue = totalDuration.inMinutes != 0 ? 5 : 15;
           // final sValue = 5;
           final magicNum =
-              ((details.localPosition.dx - seekOffset.dx) ~/ 5).clamp(
+              ((details.localPosition.dx - seekOffset.dx) ~/ sValue).clamp(
             -beforeDuration.inSeconds,
             (totalDuration.inSeconds - beforeDuration.inSeconds),
           );
