@@ -1,12 +1,12 @@
 extension StringExtension on String {
   String capitalize() {
-    return "${this[0].toUpperCase()}${substring(1).toLowerCase()}";
+    return '${this[0].toUpperCase()}${substring(1).toLowerCase()}';
   }
 
   String addPrefixToUrl() {
-    if (startsWith("http")) {
+    if (startsWith('http')) {
       return this;
     }
-    return "https://$this";
+    return 'https://$this';
   }
 }

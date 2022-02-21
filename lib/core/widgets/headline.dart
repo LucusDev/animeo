@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 
 class HeadLine extends StatelessWidget {
-  final Widget? icon;
-  final VoidCallback? onClick;
-  final String text;
   const HeadLine({
     Key? key,
     this.icon,
     this.onClick,
     required this.text,
   }) : super(key: key);
+
+  final Widget? icon;
+  final VoidCallback? onClick;
+  final String text;
 
   @override
   Widget build(BuildContext context) {

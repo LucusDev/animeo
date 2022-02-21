@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 
 class AppbarButton extends StatelessWidget {
-  final VoidCallback? onClick;
-  final Widget? child;
-
+  
   const AppbarButton({
     Key? key,
     this.onClick,
     this.child,
   }) : super(key: key);
+  final VoidCallback? onClick;
+  final Widget? child;
+
 
   @override
   Widget build(BuildContext context) {

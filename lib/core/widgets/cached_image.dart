@@ -1,20 +1,13 @@
-import 'dart:io';
-
-import 'package:animeo/core/constants/names.dart';
-import 'package:animeo/core/models/result.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:open_file/open_file.dart';
 
-class CachedImage extends StatelessWidget {
-  final String url;
-  final Widget? placeholder;
-  final Widget? error;
-  final Widget Function(BuildContext, String, DownloadProgress)?
-      progressIndicatorBuilder;
+import '../constants/names.dart';
+import '../models/result.dart';
 
+class CachedImage extends StatelessWidget {
   const CachedImage({
     Key? key,
     required this.url,
@@ -22,6 +15,11 @@ class CachedImage extends StatelessWidget {
     this.error,
     this.progressIndicatorBuilder,
   }) : super(key: key);
+  final String url;
+  final Widget? placeholder;
+  final Widget? error;
+  final Widget Function(BuildContext, String, DownloadProgress)?
+      progressIndicatorBuilder;
 
   @override
   Widget build(BuildContext context) {
@@ -62,7 +60,6 @@ class CachedImage extends StatelessWidget {
       OpenFile.open(
         cachedFile.path,
       );
-      print(cachedFile.path);
 
       // await cachedFile.copy(path);
       // final file = File(path);

@@ -1,6 +1,6 @@
 import 'package:fluttertoast/fluttertoast.dart';
 
-void showToast({
+Future<void> showToast({
   required String message,
   Toast length = Toast.LENGTH_SHORT,
 }) async {
@@ -9,7 +9,6 @@ void showToast({
     msg: message,
     toastLength: length,
     gravity: ToastGravity.BOTTOM,
-    timeInSecForIosWeb: 1,
     fontSize: 16.0,
   );
 }

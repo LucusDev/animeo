@@ -1,7 +1,8 @@
 class Names {
-  static const settingsDBName = "settingsDB";
-  static const homeDBName = "homeDB";
-  static const searchDBName = "searchDB";
-  static const libraryDBName = "libraryDB";
-  static const cachedManagerName = "cachedManager";
+  static const String settingsDBName = 'settingsDB';
+  static const String homeDBName = 'homeDB';
+  static const String searchDBName = 'searchDB';
+  static const String libraryDBName = 'libraryDB';
+  static const String cachedManagerName = 'cachedManager';
+  static const String categoryName = 'categoryName';
 }

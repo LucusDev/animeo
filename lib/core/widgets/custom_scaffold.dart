@@ -1,13 +1,9 @@
-import 'package:animeo/bottom_navigation/controller/bottom_nav_provider.dart';
-import 'package:animeo/bottom_navigation/view/widgets/custom_bottom_navigation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../features/bottom_navigation/controller/bottom_nav_provider.dart';
+
 class CustomScaffold extends ConsumerWidget {
-  final Widget child;
-  final Widget? bottomNavigationBar;
-  final Widget? appBar;
-  final bool hideOnScroll;
   const CustomScaffold({
     Key? key,
     required this.child,
@@ -15,6 +11,10 @@ class CustomScaffold extends ConsumerWidget {
     this.appBar,
     this.hideOnScroll = false,
   }) : super(key: key);
+  final Widget child;
+  final Widget? bottomNavigationBar;
+  final Widget? appBar;
+  final bool hideOnScroll;
 
   @override
   Widget build(BuildContext context, ref) {
@@ -25,7 +25,7 @@ class CustomScaffold extends ConsumerWidget {
           bool show = true;
 
           if (snapshot.hasData) {
-            show = (snapshot.data as bool);
+            show = (snapshot.data) ?? false;
           }
 
           return Column(
@@ -39,7 +39,7 @@ class CustomScaffold extends ConsumerWidget {
                       child: SlideTransition(
                         position: Tween<Offset>(
                           begin: const Offset(0, -1),
-                          end: const Offset(0, 0),
+                          end: Offset.zero,
                         ).animate(animation),
                         child: child,
                       ),
@@ -59,7 +59,7 @@ class CustomScaffold extends ConsumerWidget {
                       child: SlideTransition(
                         position: Tween<Offset>(
                           begin: const Offset(0, 1),
-                          end: const Offset(0, 0),
+                          end: Offset.zero,
                         ).animate(animation),
                         child: child,
                       ),

@@ -1,8 +1,9 @@
-import 'package:http/http.dart' as http;
 import 'package:html/parser.dart' as parser;
-import 'package:animeo/core/constants/urls.dart';
-import 'package:animeo/core/models/anime.dart';
-import 'package:animeo/core/models/result.dart';
+import 'package:http/http.dart' as http;
+
+import '../constants/urls.dart';
+import '../models/anime.dart';
+import '../models/result.dart';
 
 class CoreNetworkRepo {
   // Future<Result<E>> animeEpisodeHandler<E>(String id) async {
@@ -42,52 +43,52 @@ class CoreNetworkRepo {
   //   }
   // }
 
-  static Future<Result<Anime>> animeHandler(String id) async {
+  Future<Result<Anime>> animeHandler(String id) async {
     try {
       //prepare
       final res = await http.get(Uri.parse('${Urls.main}/category/$id'));
       final body = res.body;
       final $ = parser.parse(body);
-      final animeInfo = $.querySelector(".anime_info_body_bg")!;
+      final animeInfo = $.querySelector('.anime_info_body_bg')!;
 
       ///values
-      final img = animeInfo.querySelector("img")!.attributes['src'];
-      final title = animeInfo.querySelector("h1")!.text;
+      final img = animeInfo.querySelector('img')!.attributes['src'];
+      final title = animeInfo.querySelector('h1')!.text;
       final totalEpisode = int.tryParse($
-          .querySelectorAll(".anime_video_body #episode_page li")
+          .querySelectorAll('.anime_video_body #episode_page li')
           .last
           .text
           .trim()
-          .split("-")
+          .split('-')
           .last);
       String? status;
       final List<String> episodes = [];
       String? synopsis;
       String? otherName;
       int? released;
-      List<String>? genres = [];
+      final List<String> genres = [];
 
       //logic
       if (totalEpisode != null) {
         for (var i = 0; i < totalEpisode; i++) {
-          episodes.add("$id-episode-${i + 1}");
+          episodes.add('$id-episode-${i + 1}');
         }
       }
 
       animeInfo.querySelectorAll('.type').forEach((element) {
-        final type = element.querySelector("span")!.text;
-        if (type.toLowerCase().contains("summary")) {
-          synopsis = element.text.split("\n").last;
-        } else if (type.toLowerCase().contains("status")) {
-          status = element.querySelector("a")!.text;
-        } else if (type.toLowerCase().contains("released")) {
+        final type = element.querySelector('span')!.text;
+        if (type.toLowerCase().contains('summary')) {
+          synopsis = element.text.split('\n').last;
+        } else if (type.toLowerCase().contains('status')) {
+          status = element.querySelector('a')!.text;
+        } else if (type.toLowerCase().contains('released')) {
           released =
-              int.tryParse(element.text.replaceAll('"', "").split(" ").last);
-        } else if (type.toLowerCase().contains("other name")) {
-          otherName = element.text.replaceAll("Other name:", "");
-        } else if (type.toLowerCase().contains("genre")) {
-          final geLi = element.querySelectorAll("a");
-          for (var element in geLi) {
+              int.tryParse(element.text.replaceAll('"', '').split(' ').last);
+        } else if (type.toLowerCase().contains('other name')) {
+          otherName = element.text.replaceAll('Other name:', '');
+        } else if (type.toLowerCase().contains('genre')) {
+          final geLi = element.querySelectorAll('a');
+          for (final element in geLi) {
             if (element.attributes['title'] != null) {
               genres.add(element.attributes['title']!);
             }
@@ -98,13 +99,13 @@ class CoreNetworkRepo {
       return Result.success(Anime(
         episodes: episodes,
         id: id,
-        img: img ?? "",
+        img: img ?? '',
         title: title,
         totalEpisodes: totalEpisode ?? 0,
-        synopsis: synopsis ?? "",
-        status: status ?? "unknown",
+        synopsis: synopsis ?? '',
+        status: status ?? 'unknown',
         released: released ?? 0,
-        otherName: otherName ?? "",
+        otherName: otherName ?? '',
         genres: genres,
         isFullInfo: true,
       ));

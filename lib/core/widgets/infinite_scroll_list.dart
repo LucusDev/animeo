@@ -1,14 +1,10 @@
-import 'package:animeo/bottom_navigation/controller/bottom_nav_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
+import '../../features/bottom_navigation/controller/bottom_nav_provider.dart';
+
 class InfiniteScrollList extends ConsumerStatefulWidget {
-  final int totalCount;
-  final bool isEnd;
-  final bool hideOnScroll;
-  final Widget Function(BuildContext context, int index) itemBuilder;
-  final void Function(VisibilityInfo info)? onEnd;
   const InfiniteScrollList({
     Key? key,
     required this.totalCount,
@@ -17,6 +13,12 @@ class InfiniteScrollList extends ConsumerStatefulWidget {
     this.isEnd = true,
     this.hideOnScroll = true,
   }) : super(key: key);
+
+  final int totalCount;
+  final bool isEnd;
+  final bool hideOnScroll;
+  final Widget Function(BuildContext context, int index) itemBuilder;
+  final void Function(VisibilityInfo info)? onEnd;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -44,7 +46,7 @@ class _InfiniteScrollListState extends ConsumerState<InfiniteScrollList> {
             ref.read(scrollStreamProvider).sink.add(isUp);
           }
         }
-        ref.read(scrollOffsetProvider.notifier).setOffset(newOffset);
+        ref.read(scrollOffsetProvider.notifier).setOffset = newOffset;
       }
     });
 

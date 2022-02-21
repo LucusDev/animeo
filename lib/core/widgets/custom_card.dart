@@ -1,11 +1,6 @@
 import 'package:flutter/material.dart';
 
 class CustomCard extends StatelessWidget {
-  final Widget? child;
-  final Color? bgColor;
-  final EdgeInsets? padding;
-  final String? text;
-  final TextStyle? textStyle;
   const CustomCard({
     Key? key,
     this.child,
@@ -14,6 +9,12 @@ class CustomCard extends StatelessWidget {
     this.text,
     this.textStyle,
   }) : super(key: key);
+
+  final Widget? child;
+  final Color? bgColor;
+  final EdgeInsets? padding;
+  final String? text;
+  final TextStyle? textStyle;
 
   @override
   Widget build(BuildContext context) {

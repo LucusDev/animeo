@@ -1,19 +1,21 @@
 import 'dart:convert';
 import 'dart:ui';
 
-import 'package:animeo/core/constants/urls.dart';
-import 'package:animeo/core/models/result.dart';
-import 'package:flutter/material.dart';
-import 'package:webview_flutter/webview_flutter.dart';
-import 'package:html/parser.dart' as parser;
 import 'package:faker/faker.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:html/parser.dart' as parser;
 import 'package:http/http.dart' as http;
-import 'package:animeo/core/utils/extensions.dart';
+import 'package:webview_flutter/webview_flutter.dart';
+
+import '../constants/urls.dart';
+import '../models/result.dart';
+import '../utils/extensions.dart';
 
 String fakeUserAgent() {
-  String a = faker.internet.userAgent();
-  if (a.contains("Chrome/")) {
-    if (int.parse(a.split("Chrome/").last.split(".").first) > 55) {
+  final String a = faker.internet.userAgent();
+  if (a.contains('Chrome/')) {
+    if (int.parse(a.split('Chrome/').last.split('.').first) > 55) {
       return a;
     } else {
       return fakeUserAgent();
@@ -29,11 +31,11 @@ enum WebViewLoadingType {
 }
 
 class LoadingScreen<E> extends StatelessWidget {
-  final Future<Result<E>> future;
   const LoadingScreen({
     Key? key,
     required this.future,
   }) : super(key: key);
+  final Future<Result<E>> future;
 
   @override
   Widget build(BuildContext context) {
@@ -108,7 +110,7 @@ class _WebViewLoadingState<E> extends State<WebViewLoading<E>> {
                   javascriptMode: JavascriptMode.unrestricted,
                   onPageStarted: (url) async {
                     if (_c == null) return;
-                    if (!url.contains("gogoplay")) {
+                    if (!url.contains('gogoplay')) {
                       await _c!.loadUrl(widget.url.addPrefixToUrl());
                       return;
                     }
@@ -117,21 +119,26 @@ class _WebViewLoadingState<E> extends State<WebViewLoading<E>> {
                     _c = controller;
                   },
                   onProgress: (progress) {
-                    print(progress);
+                    if (kDebugMode) {
+                      print(progress);
+                    }
                   },
                   onPageFinished: (url) async {
                     if (_c == null) return;
-                    if (!url.contains("gogoplay")) return;
+                    if (!url.contains('gogoplay')) return;
                     if (widget.type == WebViewLoadingType.stream) {
                       await _c!.runJavascript(
                           'document.querySelector(".jw-icon.jw-icon-inline.jw-button-color.jw-reset.jw-icon-playback").click()');
                       final jstring = await _c!.runJavascriptReturningResult(
-                          "window.document.body.innerHTML");
+                          'window.document.body.innerHTML');
                       final doc = parser.parse(json.decode(jstring));
-                      final videoTag = doc.getElementsByTagName("video");
+                      final videoTag = doc.getElementsByTagName('video');
                       if (videoTag.isNotEmpty) {
                         if (videoTag.first.attributes['src'] != null) {
-                          print(videoTag.first.attributes['src']);
+                          if (kDebugMode) {
+                            print(videoTag.first.attributes['src']);
+                          }
+                          if (!mounted) return;
                           Navigator.of(context)
                               .pop(videoTag.first.attributes['src']);
                         } else {
@@ -140,7 +147,9 @@ class _WebViewLoadingState<E> extends State<WebViewLoading<E>> {
                       }
                     } else {
                       final jstring = await _c!.runJavascriptReturningResult(
-                          "window.document.body.innerHTML");
+                          'window.document.body.innerHTML');
+                      if (!mounted) return;
+
                       Navigator.of(context).pop(json.decode(jstring));
                     }
                   },
@@ -180,7 +189,7 @@ Future<Result<E>> loading<E>(
 
 Future<Result<String>> animeEpisodeHandler(String id) async {
   try {
-    final res = await http.get(Uri.parse(Urls.main + '//$id'));
+    final res = await http.get(Uri.parse('${Urls.main}//$id'));
     String url = '';
     final body = res.body;
     final $ = parser.parse(body);
@@ -191,20 +200,20 @@ Future<Result<String>> animeEpisodeHandler(String id) async {
           .asMap()
           .forEach((j, el) {
         final $el = el;
-        String? name = $el
-            .querySelector('a')!
-            .text
-            .substring(0, $el.querySelector('a')!.text.lastIndexOf('C'))
-            .trim();
+        // String? name = $el
+        //     .querySelector('a')!
+        //     .text
+        //     .substring(0, $el.querySelector('a')!.text.lastIndexOf('C'))
+        //     .trim();
         var iframe = $el.querySelector('a')!.attributes['data-video'];
         if (iframe!.startsWith('//')) {
           iframe =
               $el.querySelector('a')!.attributes['data-video']!.substring(2);
-          if (iframe.contains("embedplus")) {
-            name = "main";
+          if (iframe.contains('embedplus')) {
+            // name = 'main';
           }
         }
-        if (iframe.contains("gogoplay")) {
+        if (iframe.contains('gogoplay')) {
           url = iframe;
         }
 

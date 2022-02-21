@@ -1,19 +1,21 @@
-import 'package:animeo/core/constants/state.dart';
-import 'package:animeo/core/models/anime.dart';
-import 'package:animeo/core/network/core_repo.dart';
-import 'package:animeo/core/utils/navigate.dart';
-import 'package:animeo/core/widgets/appbar_button.dart';
-import 'package:animeo/core/widgets/cached_image.dart';
-import 'package:animeo/core/widgets/custom_card.dart';
-import 'package:animeo/core/widgets/custom_tile.dart';
-import 'package:animeo/core/widgets/loading.dart';
-import 'package:animeo/core/widgets/tag.dart';
-import 'package:animeo/core/widgets/video_player.dart';
-import 'package:animeo/library/controller/library_provider.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sizer/sizer.dart';
+
+import '../../features/library/controller/library_provider.dart';
+import '../../features/library/model/models/library_anime.dart';
+import '../constants/state.dart';
+import '../models/anime.dart';
+import '../network/core_repo.dart';
+import '../utils/navigate.dart';
+import 'appbar_button.dart';
+import 'cached_image.dart';
+import 'custom_card.dart';
+import 'custom_tile.dart';
+import 'loading.dart';
+import 'tag.dart';
+import 'video_player.dart';
 
 class AnimeDetailPage extends ConsumerStatefulWidget {
   const AnimeDetailPage({
@@ -39,15 +41,17 @@ class _AnimeDetailPageState extends ConsumerState<AnimeDetailPage> {
         body: RefreshIndicator(
       color: theme.primaryColor,
       onRefresh: () async {
-        final result = await CoreNetworkRepo.animeHandler(anime.id);
+        final result = await CoreNetworkRepo().animeHandler(anime.id);
         result.when(
           success: (value) {
             anime = value;
             ref
                 .read(libraryProvider.notifier)
-                .addToLibrary(value)
+                .addToLibrary(LibraryAnime(anime: value))
                 .then((value) {
-              print("success refreshing ");
+              if (kDebugMode) {
+                print('success refreshing');
+              }
             });
             setState(() {});
           },
@@ -77,7 +81,7 @@ class _AnimeDetailPageState extends ConsumerState<AnimeDetailPage> {
                       bottom: 4.0,
                     ),
                     child: Text(
-                      "${anime.totalEpisodes} Episodes",
+                      '${anime.totalEpisodes} Episodes',
                       style: Theme.of(context).textTheme.headline1,
                     ),
                   ),
@@ -90,12 +94,12 @@ class _AnimeDetailPageState extends ConsumerState<AnimeDetailPage> {
                     },
                     items: const [
                       DropdownMenuItem<bool>(
-                        child: Text("Older First"),
                         value: true,
+                        child: Text('Older First'),
                       ),
                       DropdownMenuItem<bool>(
-                        child: Text("Newer First"),
                         value: false,
+                        child: Text('Newer First'),
                       ),
                     ],
                     icon: Icon(
@@ -121,8 +125,6 @@ class _AnimeDetailPageState extends ConsumerState<AnimeDetailPage> {
                   index = anime.episodes.length - i;
                 }
                 return ScrollTag(
-                  // scroll: widget.hightlightEpisode == index,
-                  scroll: false,
                   child: CustomTile(
                     onTap: () async {
                       final iframe = await loading(context,
@@ -140,6 +142,8 @@ class _AnimeDetailPageState extends ConsumerState<AnimeDetailPage> {
                               },
                             ));
                             if (uu != null) {
+                              if (!mounted) return;
+
                               navigate(
                                 context,
                                 page: CustomVideoPlayer(
@@ -154,20 +158,24 @@ class _AnimeDetailPageState extends ConsumerState<AnimeDetailPage> {
                       );
                       //TODO watch add
 
-                      print("watch");
+                      if (kDebugMode) {
+                        print('watch');
+                      }
                     },
                     color: widget.hightlightEpisode == index
                         ? theme.primaryColor
                         : null,
                     title: Text(
-                      "Episode ${index + 1}",
+                      'Episode ${index + 1}',
                       style: theme.textTheme.headline1!.copyWith(fontSize: 20),
                     ),
                     trailing: IconButton(
                       iconSize: 30,
                       onPressed: () {
                         //TODO downloading add
-                        print("downloading");
+                        if (kDebugMode) {
+                          print('downloading');
+                        }
                       },
                       icon: Icon(
                         Icons.download_for_offline_outlined,
@@ -197,6 +205,7 @@ class EpisodeList extends StatelessWidget {
   final int hightlightEpisode;
   final ThemeData theme;
   final Anime anime;
+
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
@@ -212,18 +221,22 @@ class EpisodeList extends StatelessWidget {
               //   context,
               //   page: CustomVideoPlayer(),
               // );
-              print("watch");
+              if (kDebugMode) {
+                print('watch');
+              }
             },
             color: hightlightEpisode == index ? theme.primaryColor : null,
             title: Text(
-              "Episode ${index + 1}",
+              'Episode ${index + 1}',
               style: theme.textTheme.headline1!.copyWith(fontSize: 20),
             ),
             trailing: IconButton(
               iconSize: 30,
               onPressed: () {
                 //TODO downloading add
-                print("downloading");
+                if (kDebugMode) {
+                  print('downloading');
+                }
               },
               icon: Icon(
                 Icons.download_for_offline_outlined,
@@ -241,13 +254,13 @@ class EpisodeList extends StatelessWidget {
 }
 
 class ScrollTag extends StatefulWidget {
-  final Widget child;
-  final bool scroll;
   const ScrollTag({
     Key? key,
     required this.child,
     this.scroll = false,
   }) : super(key: key);
+  final Widget child;
+  final bool scroll;
 
   @override
   _ScrollTagState createState() => _ScrollTagState();
@@ -338,9 +351,7 @@ class _SynopsisTextState extends State<SynopsisText> {
           Stack(
             children: [
               Text(
-                widget.anime.synopsis +
-                    "\nAlternative Name: " +
-                    widget.anime.otherName,
+                '${widget.anime.synopsis}\nAlternative Name: ${widget.anime.otherName}',
                 style: widget.theme.textTheme.subtitle1,
                 maxLines: expand ? 999 : 3,
               ),
@@ -408,9 +419,7 @@ class HeaderWithImage extends StatelessWidget {
               builder: (context, ref, c) {
                 // anime
                 final isInLibrary =
-                    ref.watch(libraryProvider).value[anime.id] == null
-                        ? false
-                        : true;
+                    ref.watch(libraryProvider).value[anime.id] != null;
 
                 return AppBar(
                   backgroundColor: Colors.transparent,
@@ -420,6 +429,15 @@ class HeaderWithImage extends StatelessWidget {
                     Row(
                       children: [
                         GestureDetector(
+                          onLongPress: () {
+                            showDialog(
+                              context: context,
+                              builder: (context) {
+                                //TODO add library choosing dialog
+                                return const AlertDialog();
+                              },
+                            );
+                          },
                           onTap: () async {
                             if (isInLibrary) {
                               await ref
@@ -428,20 +446,23 @@ class HeaderWithImage extends StatelessWidget {
                             } else {
                               await ref
                                   .watch(libraryProvider.notifier)
-                                  .addToLibrary(anime);
+                                  .addToLibrary(LibraryAnime(anime: anime));
                             }
                           },
-                          child: SizedBox(
-                            width: 40,
-                            height: 40,
-                            child: CustomCard(
-                              padding: EdgeInsets.zero,
-                              child: Expanded(
-                                child: Icon(
-                                  isInLibrary
-                                      ? Icons.favorite
-                                      : Icons.favorite_border,
-                                  color: theme.primaryColor,
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: SizedBox(
+                              width: 40,
+                              height: 40,
+                              child: CustomCard(
+                                padding: EdgeInsets.zero,
+                                child: Expanded(
+                                  child: Icon(
+                                    isInLibrary
+                                        ? Icons.favorite
+                                        : Icons.favorite_border,
+                                    color: theme.primaryColor,
+                                  ),
                                 ),
                               ),
                             ),

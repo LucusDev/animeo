@@ -1,14 +1,15 @@
 abstract class WithState<E> {
-  final E state;
   const WithState({required this.state});
+
+  final E state;
 }
 
 class StateWrapper<Value, State> extends WithState<State> {
-  final Value value;
   StateWrapper({
     required this.value,
     required State state,
   }) : super(state: state);
+  final Value value;
 
   StateWrapper<Value, State> setValue(Value value) {
     return copyWith(value: value);

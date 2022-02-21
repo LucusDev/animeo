@@ -1,26 +1,27 @@
-import 'package:animeo/core/widgets/fullscreen.dart';
+import 'package:fijkplayer/fijkplayer.dart';
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:video_player/video_player.dart';
 
-import 'package:fijkplayer/fijkplayer.dart';
+import 'fullscreen.dart';
+
 part 'video_player_panel.freezed.dart';
 
 const sValue = 1;
 
 String _printDuration(Duration duration) {
-  String twoDigits(int n) => n.toString().padLeft(2, "0");
+  String twoDigits(int n) => n.toString().padLeft(2, '0');
   String oneDigits(String s) {
     if (s.length > 1) {
-      return s[0] == "0" ? s[1] : s;
+      return s[0] == '0' ? s[1] : s;
     }
     return s;
   }
 
-  String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
-  String twoDigitSeconds = twoDigits(duration.inSeconds.remainder(60));
-  String hour = twoDigits(duration.inHours);
-  return "${hour == "00" ? "" : hour + ":"}${oneDigits(twoDigitMinutes)}:$twoDigitSeconds";
+  final String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
+  final String twoDigitSeconds = twoDigits(duration.inSeconds.remainder(60));
+  final String hour = twoDigits(duration.inHours);
+  return "${hour == "00" ? "" : "$hour:"}${oneDigits(twoDigitMinutes)}:$twoDigitSeconds";
 }
 
 @freezed
@@ -32,17 +33,12 @@ abstract class CustomVideoControllerType with _$CustomVideoControllerType {
 }
 
 class CustomVideoController {
-  final VoidCallback play;
-  final VoidCallback pause;
-  final void Function(Duration duration) seekTo;
-  final CustomVideoControllerType type;
   const CustomVideoController({
     required this.play,
     required this.pause,
     required this.seekTo,
     required this.type,
   });
-
   factory CustomVideoController.fromVideoControllerType(
     CustomVideoControllerType type,
   ) {
@@ -79,16 +75,13 @@ class CustomVideoController {
       },
     );
   }
+  final VoidCallback play;
+  final VoidCallback pause;
+  final void Function(Duration duration) seekTo;
+  final CustomVideoControllerType type;
 }
 
 class VideoPlayerPanel extends StatefulWidget {
-  final Widget child;
-  final bool isFullScreen;
-  final bool isPlaying;
-  final CustomVideoController controller;
-  final Duration currentDuration;
-  final Duration totalDuration;
-
   const VideoPlayerPanel({
     Key? key,
     required this.child,
@@ -98,6 +91,12 @@ class VideoPlayerPanel extends StatefulWidget {
     this.currentDuration = Duration.zero,
     this.totalDuration = Duration.zero,
   }) : super(key: key);
+  final Widget child;
+  final bool isFullScreen;
+  final bool isPlaying;
+  final CustomVideoController controller;
+  final Duration currentDuration;
+  final Duration totalDuration;
 
   @override
   _VideoPlayerPanelState createState() => _VideoPlayerPanelState();
@@ -155,10 +154,10 @@ class _VideoPlayerPanelState extends State<VideoPlayerPanel> {
           context,
           VideoPlayerPanel(
             isFullScreen: true,
-            child: widget.child,
             controller: widget.controller,
             currentDuration: currentDuration,
             totalDuration: totalDuration,
+            child: widget.child,
           ),
         );
       },
@@ -166,15 +165,16 @@ class _VideoPlayerPanelState extends State<VideoPlayerPanel> {
         if (isPlaying) {
           await controller.pause();
         }
+        if (!mounted) return;
         pushFullScreenVideo(
           context,
           VideoPlayerPanel(
             isFullScreen: true,
-            child: widget.child,
             controller: widget.controller,
             currentDuration: currentDuration,
             totalDuration: totalDuration,
             isPlaying: isPlaying,
+            child: widget.child,
           ),
         );
       },
@@ -213,7 +213,7 @@ class _VideoPlayerPanelState extends State<VideoPlayerPanel> {
           final magicNum =
               ((details.localPosition.dx - seekOffset.dx) ~/ sValue).clamp(
             -beforeDuration.inSeconds,
-            (totalDuration.inSeconds - beforeDuration.inSeconds),
+            totalDuration.inSeconds - beforeDuration.inSeconds,
           );
 
           seekDuration = Duration(seconds: beforeDuration.inSeconds + magicNum);
@@ -229,6 +229,7 @@ class _VideoPlayerPanelState extends State<VideoPlayerPanel> {
           delegate: CustomLayout(),
           children: [
             LayoutId(
+              id: 'video',
               child: GestureDetector(
                 child: Stack(
                   children: [
@@ -248,9 +249,9 @@ class _VideoPlayerPanelState extends State<VideoPlayerPanel> {
                   setState(() {});
                 },
               ),
-              id: "video",
             ),
             LayoutId(
+              id: 'header',
               child: FadeWidget(
                 isFade: isHide,
                 child: Row(
@@ -277,9 +278,9 @@ class _VideoPlayerPanelState extends State<VideoPlayerPanel> {
                   ],
                 ),
               ),
-              id: "header",
             ),
             LayoutId(
+              id: 'body',
               child: GestureDetector(
                 onTap: () {
                   isHide = !isHide;
@@ -298,7 +299,6 @@ class _VideoPlayerPanelState extends State<VideoPlayerPanel> {
                           color: Colors.transparent,
                         ),
                       ),
-                      flex: 1,
                     ),
                     // IconButton(
                     //   onPressed: () {
@@ -332,7 +332,6 @@ class _VideoPlayerPanelState extends State<VideoPlayerPanel> {
                           color: Colors.transparent,
                         ),
                       ),
-                      flex: 1,
                     ),
                     // IconButton(
                     //   onPressed: () {
@@ -344,9 +343,9 @@ class _VideoPlayerPanelState extends State<VideoPlayerPanel> {
                   ],
                 ),
               ),
-              id: "body",
             ),
             LayoutId(
+              id: 'video_slider',
               child: FadeWidget(
                 isFade: isHide,
                 child: Column(
@@ -361,11 +360,10 @@ class _VideoPlayerPanelState extends State<VideoPlayerPanel> {
                               padding: const EdgeInsets.only(
                                 bottom: 8.0,
                                 left: 8,
-                                top: 0,
                               ),
                               // padding: const EdgeInsets.all(8.0),
                               child: Text(
-                                "${isSeeking ? _printDuration(seekDuration) : _printDuration(currentDuration)}/${_printDuration(totalDuration)}",
+                                '${isSeeking ? _printDuration(seekDuration) : _printDuration(currentDuration)}/${_printDuration(totalDuration)}',
                                 style: TextStyle(
                                   color: Theme.of(context).primaryColor,
                                 ),
@@ -376,7 +374,6 @@ class _VideoPlayerPanelState extends State<VideoPlayerPanel> {
                               padding: const EdgeInsets.only(
                                 bottom: 8.0,
                                 right: 8,
-                                top: 0,
                               ),
                               child: GestureDetector(
                                 onTap: () {
@@ -446,7 +443,6 @@ class _VideoPlayerPanelState extends State<VideoPlayerPanel> {
                   ],
                 ),
               ),
-              id: "video_slider",
             ),
           ],
         ),
@@ -458,9 +454,9 @@ class _VideoPlayerPanelState extends State<VideoPlayerPanel> {
 class CustomLayout extends MultiChildLayoutDelegate {
   @override
   void performLayout(Size size) {
-    final maxSize = layoutChild("video", BoxConstraints.loose(size));
+    final maxSize = layoutChild('video', BoxConstraints.loose(size));
     final appbarSize = layoutChild(
-        "header",
+        'header',
         BoxConstraints(
           maxWidth: maxSize.width,
           maxHeight: maxSize.height / 5 * 1,
@@ -468,16 +464,16 @@ class CustomLayout extends MultiChildLayoutDelegate {
           minHeight: maxSize.height / 5 * 1,
         ));
     layoutChild(
-        "body",
+        'body',
         BoxConstraints(
           maxWidth: maxSize.width,
           maxHeight: maxSize.height / 5 * 3,
           minWidth: maxSize.width,
           minHeight: maxSize.height / 5 * 3,
         ));
-    positionChild("header", const Offset(0, 0));
+    positionChild('header', Offset.zero);
     final sliderSize = layoutChild(
-        "video_slider",
+        'video_slider',
         BoxConstraints(
           maxWidth: maxSize.width,
           maxHeight: maxSize.height / 5 * 1,
@@ -485,11 +481,11 @@ class CustomLayout extends MultiChildLayoutDelegate {
           minHeight: maxSize.height / 5 * 1,
         ));
     positionChild(
-      "video_slider",
+      'video_slider',
       Offset(0, maxSize.height - sliderSize.height),
     );
 
-    positionChild("body", Offset(0, appbarSize.height));
+    positionChild('body', Offset(0, appbarSize.height));
   }
 
   @override
@@ -517,13 +513,13 @@ class CustomTrackShape extends RoundedRectSliderTrackShape {
 }
 
 class FadeWidget extends StatelessWidget {
-  final bool isFade;
-  final Widget child;
   const FadeWidget({
     Key? key,
     this.isFade = false,
     required this.child,
   }) : super(key: key);
+  final bool isFade;
+  final Widget child;
 
   @override
   Widget build(BuildContext context) {

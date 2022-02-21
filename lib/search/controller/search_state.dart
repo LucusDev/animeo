@@ -1,4 +1,0 @@
-enum searchState {
-  idle,
-  busy,
-}

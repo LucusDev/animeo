@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 
 class TempState extends ChangeNotifier {
   bool isOldFirst = true;
-  setisOldFirst(bool val) {
+  void setisOldFirst(bool val) {
     isOldFirst = val;
     notifyListeners();
   }

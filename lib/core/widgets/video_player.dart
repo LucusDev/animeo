@@ -1,13 +1,14 @@
 // import 'package:animeo/core/widgets/fullscreen.dart';
-import 'package:animeo/core/widgets/video_player_panel.dart';
-import 'package:fijkplayer/fijkplayer.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import 'package:wakelock/wakelock.dart';
 
+import 'video_player_panel.dart';
+
 class CustomVideoPlayer extends StatefulWidget {
-  final String url;
   const CustomVideoPlayer({Key? key, required this.url}) : super(key: key);
+
+  final String url;
 
   @override
   _CustomVideoPlayerState createState() => _CustomVideoPlayerState();

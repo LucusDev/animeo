@@ -1,15 +1,6 @@
 import 'package:flutter/material.dart';
 
 class CustomTile extends StatelessWidget {
-  final Widget? leading;
-  final Widget? title;
-  final Text? subtitle;
-  final Widget? trailing;
-  final double? width;
-  final double? height;
-  final Color? color;
-  final EdgeInsets? padding;
-  final VoidCallback? onTap;
   const CustomTile({
     Key? key,
     this.leading,
@@ -22,6 +13,16 @@ class CustomTile extends StatelessWidget {
     this.padding,
     this.onTap,
   }) : super(key: key);
+
+  final Widget? leading;
+  final Widget? title;
+  final Text? subtitle;
+  final Widget? trailing;
+  final double? width;
+  final double? height;
+  final Color? color;
+  final EdgeInsets? padding;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +51,6 @@ class CustomTile extends StatelessWidget {
                 horizontal: 20,
               ),
               child: Row(
-                mainAxisSize: MainAxisSize.max,
                 children: [
                   ConstrainedBox(
                     constraints: const BoxConstraints(

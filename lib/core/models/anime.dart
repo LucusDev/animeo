@@ -8,6 +8,58 @@ part 'anime.g.dart';
 @immutable
 @HiveType(typeId: 3)
 class Anime extends Equatable {
+  const Anime({
+    required this.title,
+    required this.img,
+    required this.id,
+    required this.isFullInfo,
+    this.episodes = const <String>[],
+    this.synopsis = '',
+    this.genres = const <String>[],
+    this.released = 0,
+    this.status = 'unknown',
+    this.otherName = '',
+    this.totalEpisodes = 0,
+  });
+
+  factory Anime.fromJson(Map<String, dynamic> json) {
+    List<String> episodes = <String>[];
+    String synopsis = '';
+    String title = '';
+    String img = '';
+    String id = '';
+    List<String> genres = <String>[];
+    int released = 0;
+    String status = 'unknown';
+    String otherName = '';
+    int totalEpisodes = 0;
+    episodes = [
+      ...(json['episodes'] as List<dynamic>).map((dynamic e) => '$e')
+    ];
+    synopsis = json['synopsis'] as String? ?? '';
+    title = json['title'] as String? ?? '';
+    img = json['img'] as String? ?? '';
+    id = json['id'] as String? ?? '';
+    genres = [...(json['genres'] as List<dynamic>).map((e) => '$e')];
+    released = json['released'] as int? ?? 0;
+    status = json['status'] as String? ?? 'unknown';
+    totalEpisodes = json['totalEpisodes'] as int? ?? 0;
+    otherName = json['otherName'] as String? ?? '';
+    return Anime.fullInfoCheck(
+      Anime(
+          title: title,
+          img: img,
+          id: id,
+          episodes: episodes,
+          genres: genres,
+          otherName: otherName,
+          released: released,
+          status: status,
+          synopsis: synopsis,
+          totalEpisodes: totalEpisodes,
+          isFullInfo: false),
+    );
+  }
   @HiveField(0)
   final String title;
   @HiveField(1)
@@ -30,20 +82,6 @@ class Anime extends Equatable {
   final String id;
   @HiveField(10)
   final bool isFullInfo;
-
-  const Anime({
-    required this.title,
-    required this.img,
-    required this.id,
-    required this.isFullInfo,
-    this.episodes = const [],
-    this.synopsis = '',
-    this.genres = const [],
-    this.released = 0,
-    this.status = 'unknown',
-    this.otherName = '',
-    this.totalEpisodes = 0,
-  });
 
   Anime copyWith({
     String? title,
@@ -79,46 +117,11 @@ class Anime extends Equatable {
         val.id.isEmpty ||
         val.img.isEmpty ||
         val.genres.isEmpty ||
-        val.status == 'unknown') isFullInfo = false;
+        val.status == 'unknown') {
+      isFullInfo = false;
+    }
 
     return val.copyWith(isFullInfo: isFullInfo);
-  }
-
-  factory Anime.fromJson(Map<String, dynamic> json) {
-    List<String> episodes = [];
-    String synopsis = '';
-    String title = '';
-    String img = '';
-    String id = '';
-    List<String> genres = [];
-    int released = 0;
-    String status = 'unknown';
-    String otherName = '';
-    int totalEpisodes = 0;
-    episodes = [...(json['episodes'] as List<dynamic>).map((e) => "$e")];
-    synopsis = json['synopsis'] ?? "";
-    title = json['title'] ?? "";
-    img = json['img'] ?? "";
-    id = json['id'] ?? "";
-    genres = [...(json['genres'] as List<dynamic>).map((e) => "$e")];
-    released = json['released'] ?? 0;
-    status = json['status'] ?? "unknown";
-    totalEpisodes = json['totalEpisodes'] ?? 0;
-    otherName = json['otherName'] ?? "";
-    return Anime.fullInfoCheck(
-      Anime(
-          title: title,
-          img: img,
-          id: id,
-          episodes: episodes,
-          genres: genres,
-          otherName: otherName,
-          released: released,
-          status: status,
-          synopsis: synopsis,
-          totalEpisodes: totalEpisodes,
-          isFullInfo: false),
-    );
   }
 
   Map<String, dynamic> toJson() {
@@ -133,12 +136,12 @@ class Anime extends Equatable {
     data['totalEpisodes'] = totalEpisodes;
     data['id'] = id;
     data['isFullInfo'] = isFullInfo;
-    data['episodes'] = episodes.map((v) => v).toList();
+    data['episodes'] = episodes.map((String v) => v).toList();
     return data;
   }
 
   @override
-  List<Object?> get props => [
+  List<Object?> get props => <Object?>[
         id,
       ];
 }

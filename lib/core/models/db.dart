@@ -2,18 +2,19 @@ import 'package:hive/hive.dart';
 
 ///Access the database with [db] name.Generic Type [E] must have HiveType annotations
 abstract class Db<E> {
+  Db({
+    required this.name,
+  });
   final String name;
   Box<E>? _db;
 
   ///use this after calling [init] or this will give u error
   Box<E> get db {
-    if (_db == null) throw NullThrownError();
+    if (_db == null) {
+      throw NullThrownError();
+    }
     return _db!;
   }
-
-  Db({
-    required this.name,
-  });
 
   ///open the database and init [db]  to box value
   Future<void> init() async {
