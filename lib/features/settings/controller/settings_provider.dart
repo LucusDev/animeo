@@ -8,6 +8,7 @@ import 'settings_notifer.dart';
 final settingsProvider = StateNotifierProvider<SettingsNotifier,
     StateWrapper<Settings, SettingsState>>(
   (ref) {
+    // ref.watch(provider)
     throw UnimplementedError();
   },
 );

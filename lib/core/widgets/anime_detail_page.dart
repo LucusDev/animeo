@@ -133,24 +133,28 @@ class _AnimeDetailPageState extends ConsumerState<AnimeDetailPage> {
                       iframe.when(
                         success: (value) async {
                           if (value.isNotEmpty) {
-                            final uu = await Navigator.of(context)
-                                .push<String>(PageRouteBuilder(
-                              opaque: false,
-                              pageBuilder:
-                                  (context, animation, secondaryAnimation) {
-                                return WebViewLoading(url: value);
-                              },
-                            ));
-                            if (uu != null) {
-                              if (!mounted) return;
+                            final uu =
+                                await loading(context, getStreamingLink(value));
+                            // final uu = await Navigator.of(context)
+                            //     .push<String>(PageRouteBuilder(
+                            //   opaque: false,
+                            //   pageBuilder:
+                            //       (context, animation, secondaryAnimation) {
+                            //     return WebViewLoading(url: value);
+                            //   },
+                            // ));
+                            uu.when(
+                                success: (value) {
+                                  if (!mounted) return;
 
-                              navigate(
-                                context,
-                                page: CustomVideoPlayer(
-                                  url: uu,
-                                ),
-                              );
-                            }
+                                  navigate(
+                                    context,
+                                    page: CustomVideoPlayer(
+                                      url: value,
+                                    ),
+                                  );
+                                },
+                                error: (message) {});
                             // print();
                           }
                         },

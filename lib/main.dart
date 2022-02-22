@@ -22,7 +22,7 @@ import 'features/settings/controller/settings_provider.dart';
 import 'features/settings/index.dart';
 import 'features/settings/model/database/settings_db.dart';
 
-final getIt = GetIt.instance;
+final GetIt getIt = GetIt.instance;
 
 Future<void> init() async {
   await Hive.initFlutter();
@@ -46,6 +46,8 @@ Future<void> init() async {
 }
 
 Future<void> main() async {
+  // Stream
+  // Future.sync(() => null);
   await init();
   await CategoryDb().add('default');
   await getIt<LibraryDb>().deleteAll();
@@ -64,7 +66,8 @@ Future<void> main() async {
             SettingsNotifier(await getIt<SettingsDb>().getSettings())),
       ],
       child: Sizer(
-        builder: (context, orientation, deviceType) {
+        builder: (BuildContext context, Orientation orientation,
+            DeviceType deviceType) {
           return const MyApp();
         },
       ),
