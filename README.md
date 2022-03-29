@@ -1,10 +1,8 @@
-# flutter_starter
+# Animeo
 
-Stater project for developing flutter apps.
+An app that scrape from https://gogoanime.fi
 
-## Getting Started
 
-This project is a starting point for a Flutter application.
 
 ## Used Frameworks
 
